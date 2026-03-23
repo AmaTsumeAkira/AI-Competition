@@ -76,9 +76,10 @@ brew install python@3.11
 # 从 https://www.python.org/downloads/ 下载安装包
 # 安装时勾选 "Add Python to PATH"
 
-# 配置 pip 清华镜像（加速依赖安装）
-pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple/
-# Windows: pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple/`,
+# 配置 pip 镜像源（加速依赖安装，任选一个）
+pip config set global.index-url https://mirrors.aliyun.com/pypi/simple/
+# 或清华源: pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple/
+# Windows 同上命令`,
       verifyCommand: `python3 --version  # Linux/macOS
 python --version   # Windows（如安装时勾选了 PATH）
 pip3 --version     # Linux/macOS
@@ -86,7 +87,7 @@ pip --version      # Windows
 python3 -c "import sys; print(sys.executable)"`,
       faq: [
         { q: 'python3 命令找不到', a: '尝试使用 python 代替 python3，或检查 PATH 环境变量' },
-        { q: 'pip 安装很慢', a: '使用清华镜像：pip install -i https://pypi.tuna.tsinghua.edu.cn/simple/ package_name' },
+        { q: 'pip 安装很慢', a: '使用镜像源：pip install -i https://mirrors.aliyun.com/pypi/simple/ package_name（阿里云）或 pip install -i https://pypi.tuna.tsinghua.edu.cn/simple/ package_name（清华）' },
         { q: '权限不足', a: '使用 --user 参数：pip install --user package_name，或创建虚拟环境' },
       ],
     },
@@ -100,7 +101,12 @@ sudo apt install build-essential gcc
 # macOS
 xcode-select --install
 
-# Windows — 推荐安装 MSYS2 + MinGW
+# Windows — 方案一：Dev-C++（推荐，开箱即用）
+# 1. 从 https://sourceforge.net/projects/orwelldevcpp/ 下载 Dev-C++
+# 2. 安装后自带 GCC 编译器，无需额外配置 PATH
+# 3. 可直接在 Dev-C++ IDE 中编写、编译、运行 C 程序
+
+# Windows — 方案二：MSYS2 + MinGW
 # 1. 从 https://www.msys2.org 下载安装
 # 2. 安装后打开 MSYS2 终端运行：
 pacman -S mingw-w64-x86_64-gcc
@@ -119,7 +125,7 @@ gcc test.c -o test && ./test && rm test test.c
 # echo int main() { printf("Hello GCC\\n"); return 0; } >> test.c
 # gcc test.c -o test.exe && test.exe`,
       faq: [
-        { q: 'gcc 命令找不到', a: 'Ubuntu: sudo apt install build-essential | macOS: xcode-select --install' },
+        { q: 'gcc 命令找不到', a: 'Ubuntu: sudo apt install build-essential | macOS: xcode-select --install | Windows: 安装 Dev-C++（自带GCC）或 MSYS2 + MinGW' },
         { q: '编译警告太多', a: '比赛关注的是 Bug 修复正确性，编译警告不影响评分但建议清理' },
       ],
     },
@@ -161,7 +167,7 @@ venv\\Scripts\\activate      # Windows
 pip install flask flask-cors
 
 # 或一次性安装所有依赖
-pip install -i https://pypi.tuna.tsinghua.edu.cn/simple/ flask flask-cors`,
+pip install -i https://mirrors.aliyun.com/pypi/simple/ flask flask-cors`,
       verifyCommand: `python3 -c "import flask; print(f'Flask {flask.__version__}')"
 # Windows: python -c "import flask; print(f'Flask {flask.__version__}')"
 python3 -c "import flask_cors; print(f'Flask-CORS OK')"
@@ -169,6 +175,27 @@ python3 -c "import flask_cors; print(f'Flask-CORS OK')"
       faq: [
         { q: 'Flask 版本不兼容', a: '使用 pip install flask==2.3.0 安装指定版本' },
         { q: '端口被占用', a: 'Linux/macOS: lsof -i :5000 | Windows: netstat -ano | findstr :5000，或修改 app.py 中的端口号' },
+      ],
+    },
+    {
+      icon: '💻',
+      title: 'VS Code 编辑器',
+      description: 'AI纠错赛项允许使用 VS Code 插件类 AI 工具，推荐安装 VS Code 作为主力编辑器。',
+      installCommand: `# 从 VS Code 官网下载安装
+# https://code.visualstudio.com/
+
+# Windows: 下载 .exe 安装包，安装时勾选：
+# ✅ 添加到 PATH
+# ✅ 添加"通过 Code 打开"右键菜单
+
+# 安装后打开终端验证
+code --version`,
+      verifyCommand: `code --version
+# 打开项目
+code .`,
+      faq: [
+        { q: 'code 命令找不到', a: '安装 VS Code 时未勾选"添加到 PATH"，手动添加或重启终端' },
+        { q: '如何安装 AI 插件', a: '打开 VS Code → 左侧扩展图标 → 搜索"通义灵码"或"CodeGeeX"等 → 安装' },
       ],
     },
   ]
@@ -187,7 +214,7 @@ python3 -c "import flask_cors; print(f'Flask-CORS OK')"
           <h2 className="text-lg font-bold text-blue-900 mb-3">⚡ 快速检查清单</h2>
           <p className="text-sm text-blue-800 mb-4">比赛开始前，请确保以下环境已就绪：</p>
           <div className="grid gap-2 sm:grid-cols-2">
-            {['Python 3.8+', 'pip（配置清华镜像）', 'GCC 编译器', 'Git', '网络连接正常', 'AI工具已安装'].map((item) => (
+            {['Python 3.8+', 'pip（配置阿里云/清华镜像）', 'GCC 编译器（Dev-C++ 或 MinGW）', 'Git', 'VS Code', '网络连接正常', 'AI工具已安装'].map((item) => (
               <label key={item} className="flex items-center gap-2 text-sm text-blue-800">
                 <input type="checkbox" className="rounded border-blue-300" />
                 {item}
