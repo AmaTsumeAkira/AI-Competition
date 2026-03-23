@@ -1,36 +1,60 @@
-# CLI部署 Level 1：基础配置
+# CLI部署 Level 1：Python 网页数据采集
 
 ## 任务说明
 
-你收到了一个 Nginx 反向代理配置任务。需要为 3 个后端服务配置路由规则。
+编写一个 Python 脚本，从指定网页抓取数据并保存为 CSV 文件。
 
-**你的任务：** 使用 CLI AI 工具（不允许使用 VSCode 插件）完成配置。
+**考核目标：** 使用 AI 命令行工具（如 Claude Code、Codex CLI）完成编码任务。
 
-## 后端服务
+## 安装依赖
 
-| 路由 | 后端地址 | 说明 |
-|------|---------|------|
-| `/api/v1/*` | `127.0.0.1:8081` | 用户服务 |
-| `/api/v2/*` | `127.0.0.1:8082` | 订单服务 |
-| `/static/*` | `127.0.0.1:8083` | 静态资源 |
+```bash
+# Windows PowerShell
+pip install -i https://pypi.tuna.tsinghua.edu.cn/simple/ requests beautifulsoup4 pandas
 
-## 交付物
+# Mac/Linux
+pip install -i https://pypi.tuna.tsinghua.edu.cn/simple/ requests beautifulsoup4 pandas
+```
 
-1. `nginx.conf` - Nginx 配置文件
-2. `setup.sh` - 一键部署脚本
-3. `test.sh` - 路由测试脚本（5 个测试用例）
+## 任务要求
+
+### 基础任务（15分）
+1. 从 `https://quotes.toscrape.com/` 抓取名言数据
+2. 提取：名言内容、作者、标签
+3. 保存为 `quotes.csv`，UTF-8 编码
+4. 至少抓取 3 页数据
+
+### 进阶任务（5分）
+5. 添加命令行参数支持：`python scraper.py --pages 5`
+6. 添加错误处理（网络超时、页面不存在）
+
+## 文件清单
+
+| 文件 | 说明 |
+|------|------|
+| `README.md` | 本文件 |
+| `scraper.py` | 选手编写的爬虫脚本 |
+| `quotes.csv` | 抓取结果 |
+| `test_runner.py` | 测试脚本（选手勿改） |
 
 ## 评分标准
 
-- **功能测试**：80%（5 个路由测试全部通过满分）
-- **配置规范性**：20%（注释完整性、rate limiting、安全头）
-- **满分**：20 分
-- **限时**：30 分钟
+| 项目 | 分值 | 标准 |
+|------|------|------|
+| 数据完整性 | 8 分 | 抓取 ≥3 页，字段齐全 |
+| 文件格式 | 4 分 | CSV 格式正确，UTF-8 编码 |
+| 代码质量 | 3 分 | 有注释，异常处理 |
+| 进阶功能 | 5 分 | 命令行参数 + 错误处理 |
+| **满分** | **20 分** | |
 
-## 测试用例
+## 限时：30 分钟
 
-1. `/api/v1/users` → 路由到 8081
-2. `/api/v2/orders` → 路由到 8082
-3. `/static/images/logo.png` → 路由到 8083
-4. `/health` → 返回 200
-5. `/api/v1/health` → 返回 200
+## 提交物
+1. `scraper.py` 源代码
+2. `quotes.csv` 数据文件
+3. 终端操作录屏（展示 AI 工具使用过程）
+
+## 提示
+- 网站 `quotes.toscrape.com` 是专门用于练习爬虫的网站
+- 不需要登录，不需要反爬处理
+- 注意翻页机制（URL 中的 page 参数）
