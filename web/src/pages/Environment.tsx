@@ -287,7 +287,7 @@ code .`,
           <h3 className="text-lg font-bold text-gray-900 mb-4">📋 环境搭建通用建议</h3>
           <ul className="space-y-2 text-sm text-gray-600">
             <li className="flex gap-2"><span className="text-blue-500">1.</span>始终使用虚拟环境隔离项目依赖，避免系统级污染</li>
-            <li className="flex gap-2"><span className="text-blue-500">2.</span>比赛前在家预装好所有依赖，比赛时只做增量更新</li>
+            <li className="flex gap-2"><span className="text-blue-500">2.</span>比赛前检查机房电脑环境是否已就绪，熟悉终端基本操作</li>
             <li className="flex gap-2"><span className="text-blue-500">3.</span>保持网络畅通，部分 AI 工具需要在线 API 调用</li>
             <li className="flex gap-2"><span className="text-blue-500">4.</span>准备一个干净的开发环境，避免已有项目干扰</li>
             <li className="flex gap-2"><span className="text-blue-500">5.</span>提前熟悉终端操作，CLI 赛道全程在终端中完成</li>
