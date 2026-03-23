@@ -419,6 +419,7 @@ export const OLLAMA_REF: OllamaRef = {
   installUrl: 'https://ollama.com/download',
   modelLibraryUrl: 'https://ollama.com/library',
   quickVerifyCommand: 'ollama list && ollama run qwen2.5-coder:latest "echo test"',
+  // Windows: 同样的命令，Ollama 安装后自动注册到 PATH
   models: [
     { id: 'qwen2.5-coder', name: 'Qwen2.5-Coder', size: '~7B参数', recommendedFor: ['代码补全', 'Bug修复', '代码审查'], command: 'ollama run qwen2.5-coder:latest' },
     { id: 'deepseek-coder-v2', name: 'DeepSeek Coder V2', size: '~16B参数', recommendedFor: ['复杂代码生成', '多文件项目', '代码解释'], command: 'ollama run deepseek-coder-v2:latest' },
@@ -437,6 +438,7 @@ export const OPENCLAW_REF: OpenClawRef = {
     '安装依赖：cd OpenClaw && npm install',
     '配置 AI Provider：修改配置文件切换 API 路由与密钥',
     '验证安装：openclaw --version',
+    // Windows: npm install -g openclaw（如有预编译包），验证命令相同
   ],
   capabilities: [
     '深度代码分析与修改',

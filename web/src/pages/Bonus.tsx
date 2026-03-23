@@ -209,7 +209,14 @@ export default function Bonus() {
                     className="text-indigo-600 hover:underline text-sm">{OLLAMA_REF.installUrl}</a>
                 </div>
                 <div>
-                  <p className="text-sm font-semibold text-indigo-800 mb-1">快速验证</p>
+                  <p className="text-sm font-semibold text-indigo-800 mb-1">安装方式</p>
+                  <div className="text-xs text-gray-600 space-y-1">
+                    <p><strong>Linux/macOS：</strong>直接从官网下载安装包，或终端执行 <code className="bg-gray-100 px-1 rounded">curl -fsSL https://ollama.com/install.sh | sh</code></p>
+                    <p><strong>Windows：</strong>从 <a href={OLLAMA_REF.installUrl} target="_blank" rel="noopener noreferrer" className="text-indigo-600 hover:underline">ollama.com/download</a> 下载 <code className="bg-gray-100 px-1 rounded">.exe</code> 安装包，安装后 Ollama 自动以服务运行，命令行可直接使用</p>
+                  </div>
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-indigo-800 mb-1">快速验证（Linux/macOS/Windows 通用）</p>
                   <code className="block bg-gray-900 text-green-400 text-xs p-3 rounded-lg overflow-x-auto">
                     {OLLAMA_REF.quickVerifyCommand}
                   </code>
@@ -244,6 +251,13 @@ export default function Bonus() {
                     <p className="text-sm font-semibold text-violet-800 mb-1">文档</p>
                     <a href={OPENCLAW_REF.docUrl} target="_blank" rel="noopener noreferrer"
                       className="text-violet-600 hover:underline text-sm break-all">{OPENCLAW_REF.docUrl}</a>
+                  </div>
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-violet-800 mb-1">前置依赖</p>
+                  <div className="text-xs text-gray-600 space-y-1">
+                    <p><strong>所有平台：</strong>需要 Node.js 18+，从 <a href="https://nodejs.org" target="_blank" rel="noopener noreferrer" className="text-violet-600 hover:underline">nodejs.org</a> 下载安装</p>
+                    <p><strong>Windows：</strong>安装 Node.js 后，使用 PowerShell 或 Windows Terminal 执行以下命令</p>
                   </div>
                 </div>
                 <div>

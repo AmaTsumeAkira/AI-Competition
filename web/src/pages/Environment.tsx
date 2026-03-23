@@ -74,11 +74,15 @@ brew install python@3.11
 
 # Windows
 # 从 https://www.python.org/downloads/ 下载安装包
+# 安装时勾选 "Add Python to PATH"
 
 # 配置 pip 清华镜像（加速依赖安装）
-pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple/`,
-      verifyCommand: `python3 --version
-pip3 --version
+pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple/
+# Windows: pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple/`,
+      verifyCommand: `python3 --version  # Linux/macOS
+python --version   # Windows（如安装时勾选了 PATH）
+pip3 --version     # Linux/macOS
+pip --version      # Windows
 python3 -c "import sys; print(sys.executable)"`,
       faq: [
         { q: 'python3 命令找不到', a: '尝试使用 python 代替 python3，或检查 PATH 环境变量' },
@@ -96,13 +100,24 @@ sudo apt install build-essential gcc
 # macOS
 xcode-select --install
 
+# Windows — 推荐安装 MSYS2 + MinGW
+# 1. 从 https://www.msys2.org 下载安装
+# 2. 安装后打开 MSYS2 终端运行：
+pacman -S mingw-w64-x86_64-gcc
+# 3. 将 C:\\msys64\\mingw64\\bin 添加到系统 PATH
+
 # 验证
 gcc --version`,
       verifyCommand: `gcc --version
-# 编译测试
+# 编译测试 — Linux/macOS
 echo '#include <stdio.h>
 int main() { printf("Hello GCC\\n"); return 0; }' > test.c
-gcc test.c -o test && ./test && rm test test.c`,
+gcc test.c -o test && ./test && rm test test.c
+
+# 编译测试 — Windows（在 cmd/PowerShell 中）
+# echo #include <stdio.h> > test.c
+# echo int main() { printf("Hello GCC\\n"); return 0; } >> test.c
+# gcc test.c -o test.exe && test.exe`,
       faq: [
         { q: 'gcc 命令找不到', a: 'Ubuntu: sudo apt install build-essential | macOS: xcode-select --install' },
         { q: '编译警告太多', a: '比赛关注的是 Bug 修复正确性，编译警告不影响评分但建议清理' },
@@ -118,8 +133,13 @@ sudo apt install sqlite3
 # macOS
 brew install sqlite
 
+# Windows
+# 从 https://www.sqlite.org/download.html 下载 sqlite-tools-win32-*.zip
+# 解压后将 sqlite3.exe 所在目录添加到系统 PATH
+
 # Python SQLite 支持（通常内置）
-python3 -c "import sqlite3; print(sqlite3.sqlite_version)"`,
+python3 -c "import sqlite3; print(sqlite3.sqlite_version)"
+# Windows: python -c "import sqlite3; print(sqlite3.sqlite_version)"`,
       verifyCommand: `sqlite3 --version
 # 基本操作测试
 sqlite3 :memory: "CREATE TABLE test(id INTEGER PRIMARY KEY, name TEXT); INSERT INTO test VALUES(1,'hello'); SELECT * FROM test;"`,
@@ -132,9 +152,10 @@ sqlite3 :memory: "CREATE TABLE test(id INTEGER PRIMARY KEY, name TEXT); INSERT I
       title: 'Flask 依赖',
       description: 'CLI 赛道的 Level 3 使用 Flask 框架构建 Web 应用。',
       installCommand: `# 创建虚拟环境（推荐）
-python3 -m venv venv
-source venv/bin/activate  # Linux/macOS
-# venv\\Scripts\\activate   # Windows
+python3 -m venv venv        # Linux/macOS
+python -m venv venv         # Windows
+source venv/bin/activate    # Linux/macOS
+venv\\Scripts\\activate      # Windows
 
 # 安装 Flask
 pip install flask flask-cors
@@ -142,10 +163,12 @@ pip install flask flask-cors
 # 或一次性安装所有依赖
 pip install -i https://pypi.tuna.tsinghua.edu.cn/simple/ flask flask-cors`,
       verifyCommand: `python3 -c "import flask; print(f'Flask {flask.__version__}')"
-python3 -c "import flask_cors; print(f'Flask-CORS OK')"`,
+# Windows: python -c "import flask; print(f'Flask {flask.__version__}')"
+python3 -c "import flask_cors; print(f'Flask-CORS OK')"
+# Windows: python -c "import flask_cors; print(f'Flask-CORS OK')"`,
       faq: [
         { q: 'Flask 版本不兼容', a: '使用 pip install flask==2.3.0 安装指定版本' },
-        { q: '端口被占用', a: '使用 lsof -i :5000 查看占用进程，或修改 app.py 中的端口号' },
+        { q: '端口被占用', a: 'Linux/macOS: lsof -i :5000 | Windows: netstat -ano | findstr :5000，或修改 app.py 中的端口号' },
       ],
     },
   ]
@@ -176,6 +199,61 @@ python3 -c "import flask_cors; print(f'Flask-CORS OK')"`,
         {sections.map((section) => (
           <EnvSection key={section.title} {...section} />
         ))}
+
+        {/* Windows 终端基础 */}
+        <div className="bg-white rounded-xl border border-gray-200 overflow-hidden mb-6">
+          <div className="px-6 py-4 bg-gray-50 border-b border-gray-200">
+            <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+              <span className="text-2xl">🪟</span>
+              Windows 终端基础
+            </h3>
+            <p className="text-sm text-gray-500 mt-1">Windows 用户必读：常用命令对照、终端打开方式、权限与路径</p>
+          </div>
+          <div className="p-6 space-y-4 text-sm text-gray-700">
+            <div>
+              <p className="font-semibold text-gray-900 mb-2">如何打开终端</p>
+              <ul className="space-y-1 ml-4">
+                <li><code className="bg-gray-100 px-1.5 py-0.5 rounded">Win + R</code> → 输入 <code className="bg-gray-100 px-1.5 py-0.5 rounded">cmd</code> 或 <code className="bg-gray-100 px-1.5 py-0.5 rounded">powershell</code> → 回车</li>
+                <li>推荐安装 <a href="https://github.com/microsoft/terminal" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">Windows Terminal</a>，支持多标签页</li>
+                <li>管理员权限：右键「以管理员身份运行」终端</li>
+              </ul>
+            </div>
+            <div>
+              <p className="font-semibold text-gray-900 mb-2">常用命令对照</p>
+              <div className="overflow-x-auto">
+                <table className="w-full border-collapse text-xs">
+                  <thead>
+                    <tr className="bg-gray-100">
+                      <th className="text-left py-1.5 px-2 border border-gray-200">功能</th>
+                      <th className="text-left py-1.5 px-2 border border-gray-200">Linux / macOS</th>
+                      <th className="text-left py-1.5 px-2 border border-gray-200">Windows (cmd)</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr><td className="py-1 px-2 border border-gray-200">列出文件</td><td className="py-1 px-2 border border-gray-200"><code>ls</code></td><td className="py-1 px-2 border border-gray-200"><code>dir</code></td></tr>
+                    <tr className="bg-gray-50"><td className="py-1 px-2 border border-gray-200">切换目录</td><td className="py-1 px-2 border border-gray-200"><code>cd</code></td><td className="py-1 px-2 border border-gray-200"><code>cd</code> / <code>cd /d</code></td></tr>
+                    <tr><td className="py-1 px-2 border border-gray-200">查看文件</td><td className="py-1 px-2 border border-gray-200"><code>cat file</code></td><td className="py-1 px-2 border border-gray-200"><code>type file</code></td></tr>
+                    <tr className="bg-gray-50"><td className="py-1 px-2 border border-gray-200">删除文件</td><td className="py-1 px-2 border border-gray-200"><code>rm file</code></td><td className="py-1 px-2 border border-gray-200"><code>del file</code></td></tr>
+                    <tr><td className="py-1 px-2 border border-gray-200">删除目录</td><td className="py-1 px-2 border border-gray-200"><code>rm -rf dir</code></td><td className="py-1 px-2 border border-gray-200"><code>rmdir /s /q dir</code></td></tr>
+                    <tr className="bg-gray-50"><td className="py-1 px-2 border border-gray-200">查找进程</td><td className="py-1 px-2 border border-gray-200"><code>ps aux | grep</code></td><td className="py-1 px-2 border border-gray-200"><code>tasklist | findstr</code></td></tr>
+                    <tr><td className="py-1 px-2 border border-gray-200">查看端口</td><td className="py-1 px-2 border border-gray-200"><code>lsof -i :PORT</code></td><td className="py-1 px-2 border border-gray-200"><code>netstat -ano | findstr :PORT</code></td></tr>
+                    <tr className="bg-gray-50"><td className="py-1 px-2 border border-gray-200">路径分隔符</td><td className="py-1 px-2 border border-gray-200"><code>/</code></td><td className="py-1 px-2 border border-gray-200"><code>\\</code>（cmd）或 <code>/</code>（PowerShell）</td></tr>
+                    <tr><td className="py-1 px-2 border border-gray-200">激活虚拟环境</td><td className="py-1 px-2 border border-gray-200"><code>source venv/bin/activate</code></td><td className="py-1 px-2 border border-gray-200"><code>venv\\Scripts\\activate</code></td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <div>
+              <p className="font-semibold text-gray-900 mb-2">注意事项</p>
+              <ul className="space-y-1 ml-4 list-disc list-inside text-gray-600">
+                <li>Windows 下 <code className="bg-gray-100 px-1 rounded">python</code> 代替 <code className="bg-gray-100 px-1 rounded">python3</code>，<code className="bg-gray-100 px-1 rounded">pip</code> 代替 <code className="bg-gray-100 px-1 rounded">pip3</code></li>
+                <li>路径使用反斜杠 <code className="bg-gray-100 px-1 rounded">\\</code>，或在 PowerShell 中使用正斜杠 <code className="bg-gray-100 px-1 rounded">/</code></li>
+                <li>执行脚本遇到权限问题时，先运行 <code className="bg-gray-100 px-1 rounded">Set-ExecutionPolicy RemoteSigned -Scope CurrentUser</code></li>
+                <li>Linux/macOS 的 <code className="bg-gray-100 px-1 rounded">&&</code> 在 cmd 中同样可用，PowerShell 中用 <code className="bg-gray-100 px-1 rounded">;</code></li>
+              </ul>
+            </div>
+          </div>
+        </div>
 
         {/* 通用建议 */}
         <div className="bg-white rounded-xl border border-gray-200 p-6">

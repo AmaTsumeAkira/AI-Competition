@@ -14,9 +14,8 @@ import os
 # 应该统一为 5000 或修改启动命令
 PORT = 8080
 
-# BUG②：数据库路径使用绝对路径 - 换电脑就报错
-# 应该使用相对路径或环境变量
-DB_PATH = "/home/user/students.db"
+# BUG②（已修复）：数据库路径使用脚本所在目录的相对路径，跨平台兼容
+DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "students.db")
 
 app = Flask(__name__)
 
