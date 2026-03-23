@@ -1,89 +1,68 @@
-function About() {
+export default function About() {
   return (
-    <div className="container">
-      <section className="section">
-        <h2>ℹ️ 关于大赛</h2>
+    <div className="mx-auto max-w-4xl px-4 py-10">
+      <h1 className="mb-8 text-2xl font-bold text-blue-900">关于大赛</h1>
 
-        <div className="about-card">
-          <h3>🎯 大赛背景</h3>
-          <p>
-            随着 AI 技术在软件开发领域的深入应用，"与 AI 协作"已成为程序员的核心能力之一。
-            传统的编程竞赛侧重于算法和编码能力，而<strong>AI素养大赛</strong>聚焦于：
+      <div className="space-y-8">
+        {/* 背景 */}
+        <section className="rounded-xl border border-gray-200 bg-white p-6 shadow-md">
+          <h2 className="mb-3 text-lg font-bold text-blue-800">📖 赛事背景</h2>
+          <p className="text-sm leading-relaxed text-gray-700">
+            AI素养大赛·专业赛道是一场面向计算机专业学生的 AI 实战能力竞赛。
+            随着 AI 工具在软件开发中的广泛应用，如何正确、高效地使用 AI 工具已成为
+            每位开发者的核心技能。本赛事通过真实场景下的代码调试和项目部署，
+            考察参赛者对 AI 辅助开发工具的掌握程度与工程化实践能力。
           </p>
-          <ul style={{ paddingLeft: '1.5rem', marginTop: '0.75rem' }}>
-            <li><strong>问题描述能力</strong> — 能否清晰、准确地向 AI 描述技术问题</li>
-            <li><strong>结果验证能力</strong> — 能否判断 AI 给出的修复方案是否正确</li>
-            <li><strong>工具驾驭能力</strong> — 能否高效使用 AI CLI 工具完成工程任务</li>
-            <li><strong>工程部署能力</strong> — 能否将 AI 辅助产出的代码正确部署运行</li>
-          </ul>
-          <p style={{ marginTop: '0.75rem' }}>
-            本赛事面向计算机相关专业学生，旨在考察参赛选手在真实开发场景下的 AI 工具使用素养。
-          </p>
-        </div>
+        </section>
 
-        <div className="about-card">
-          <h3>👤 组织者信息</h3>
-          <table className="data-table">
-            <tbody>
-              <tr><td style={{ width: '120px', fontWeight: 600 }}>主办方</td><td>AmaTsume Akira</td></tr>
-              <tr><td style={{ fontWeight: 600 }}>赛事定位</td><td>校级 / 院级编程素养竞赛</td></tr>
-              <tr><td style={{ fontWeight: 600 }}>适用对象</td><td>计算机相关专业大一至大三学生</td></tr>
-              <tr><td style={{ fontWeight: 600 }}>首次发布</td><td>2026 年 3 月</td></tr>
-            </tbody>
-          </table>
-        </div>
-
-        <div className="about-card">
-          <h3>📬 联系方式</h3>
-          <table className="data-table">
-            <tbody>
-              <tr>
-                <td style={{ width: '120px', fontWeight: 600 }}>GitHub</td>
-                <td>
-                  <a href="https://github.com/AmaTsumeAkira/AI-Competition" target="_blank" rel="noopener noreferrer">
-                    github.com/AmaTsumeAkira/AI-Competition
-                  </a>
-                </td>
-              </tr>
-              <tr>
-                <td style={{ fontWeight: 600 }}>Issues</td>
-                <td>
-                  如有赛题疑问或发现问题，请在 GitHub 仓库提交 Issue
-                </td>
-              </tr>
-            </tbody>
-          </table>
-
-          <div className="info-box" style={{ marginTop: '1rem' }}>
-            <strong>💡 提示：</strong>赛题相关的疑问、Bug 反馈、环境配置问题等，
-            均可通过 GitHub Issues 提交，组织者会及时回复。
+        {/* 组织者 */}
+        <section className="rounded-xl border border-gray-200 bg-white p-6 shadow-md">
+          <h2 className="mb-3 text-lg font-bold text-blue-800">👥 组织信息</h2>
+          <div className="space-y-2 text-sm text-gray-700">
+            <p><strong>赛事主办方：</strong>AI素养大赛组委会</p>
+            <p><strong>赛事负责人：</strong>Boss</p>
+            <p><strong>最后更新：</strong>2026-03-23</p>
           </div>
-        </div>
+        </section>
 
-        <div className="about-card">
-          <h3>📁 仓库目录结构</h3>
-          <pre style={{
-            background: 'var(--color-accent)',
-            padding: '1rem',
-            borderRadius: 'var(--radius)',
-            overflow: 'auto',
-            fontSize: '0.9rem',
-            lineHeight: 1.6,
-          }}>{`AI-Competition/
-├── PRO-DBG/               # AI纠错赛项
-│   ├── L1/                # Python 库存检查
-│   ├── L2/                # SQLite 成绩查询
-│   └── L3/                # C语言 学生管理
-├── PRO-CLI/               # CLI部署赛项
-│   ├── L1/                # Python 网页爬虫
-│   ├── L2/                # SQLite 数据分析
-│   └── L3/                # Flask Web 应用
-├── web/                   # 官方网站源码
-└── README.md`}</pre>
-        </div>
-      </section>
+        {/* 环境要求 */}
+        <section className="rounded-xl border border-gray-200 bg-white p-6 shadow-md">
+          <h2 className="mb-3 text-lg font-bold text-blue-800">💻 环境要求</h2>
+          <ul className="space-y-2 text-sm text-gray-700">
+            <li className="flex items-start gap-2">
+              <span className="mt-0.5 text-blue-600">•</span>
+              <span>操作系统：Windows / Mac / Linux 均可</span>
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="mt-0.5 text-blue-600">•</span>
+              <span>Python 3.8+</span>
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="mt-0.5 text-blue-600">•</span>
+              <span>pip 镜像源：<code className="rounded bg-gray-100 px-1.5 py-0.5 text-xs">https://pypi.tuna.tsinghua.edu.cn/simple/</code></span>
+            </li>
+          </ul>
+        </section>
+
+        {/* 联系方式 */}
+        <section className="rounded-xl border border-gray-200 bg-white p-6 shadow-md">
+          <h2 className="mb-3 text-lg font-bold text-blue-800">📬 联系我们</h2>
+          <div className="space-y-2 text-sm text-gray-700">
+            <p><strong>GitHub 仓库：</strong>
+              <a
+                href="https://github.com/AmaTsumeAkira/AI-Competition"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-600 underline hover:text-blue-800"
+              >
+                AmaTsumeAkira/AI-Competition
+              </a>
+            </p>
+            <p><strong>赛题提交：</strong>通过 GitHub Issues 提交问题或反馈</p>
+            <p><strong>赛事咨询：</strong>联系组委会负责人</p>
+          </div>
+        </section>
+      </div>
     </div>
   )
 }
-
-export default About

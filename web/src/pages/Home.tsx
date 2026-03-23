@@ -1,109 +1,106 @@
 import { Link } from 'react-router-dom'
+import ScoreBadge from '../components/ScoreBadge'
 
-function Home() {
+const schedule = [
+  { date: '2026-03-24', event: '赛事启动 & 赛题发布', status: '进行中' },
+  { date: '2026-03-31', event: 'AI纠错（PRO-DBG）竞赛日', status: '即将开始' },
+  { date: '2026-04-07', event: 'CLI部署（PRO-CLI）竞赛日', status: '即将开始' },
+  { date: '2026-04-14', event: '成绩公示 & 极客加分审核', status: '未开始' },
+  { date: '2026-04-21', event: '颁奖典礼', status: '未开始' },
+]
+
+export default function Home() {
   return (
-    <div className="container">
+    <div className="mx-auto max-w-6xl px-4 py-10">
       {/* Hero */}
-      <section className="hero">
-        <h1>AI素养大赛 · 专业赛道</h1>
-        <p className="subtitle">
-          考察 AI 工具使用能力、代码调试能力和工程部署能力
+      <section className="mb-12 text-center">
+        <h1 className="text-3xl font-bold text-blue-900 sm:text-4xl">AI素养大赛 · 专业赛道</h1>
+        <p className="mx-auto mt-4 max-w-2xl text-gray-600 leading-relaxed">
+          面向计算机专业学生的 AI 实战能力竞赛，涵盖 AI纠错 与 CLI部署开发 两大赛项。
+          通过真实场景考察参赛者的代码调试、工具链部署与工程化能力。
         </p>
-        <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-          <Link to="/debug" className="card-link">赛项一：AI纠错</Link>
-          <Link to="/cli" className="card-link" style={{ background: 'rgba(255,255,255,0.2)' }}>
-            赛项二：CLI部署
+      </section>
+
+      {/* 赛程表 */}
+      <section className="mb-12">
+        <h2 className="mb-6 text-xl font-bold text-blue-900">📅 赛程安排</h2>
+        <div className="overflow-x-auto rounded-xl border border-gray-200 bg-white shadow-md">
+          <table className="w-full text-left text-sm">
+            <thead className="bg-blue-50 text-blue-900">
+              <tr>
+                <th className="px-4 py-3 font-semibold">日期</th>
+                <th className="px-4 py-3 font-semibold">事项</th>
+                <th className="px-4 py-3 font-semibold">状态</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-100">
+              {schedule.map((row, i) => (
+                <tr key={i} className="hover:bg-gray-50">
+                  <td className="px-4 py-3 font-medium text-gray-900">{row.date}</td>
+                  <td className="px-4 py-3 text-gray-700">{row.event}</td>
+                  <td className="px-4 py-3">
+                    <span
+                      className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${
+                        row.status === '进行中'
+                          ? 'bg-green-100 text-green-800'
+                          : row.status === '即将开始'
+                          ? 'bg-yellow-100 text-yellow-800'
+                          : 'bg-gray-100 text-gray-600'
+                      }`}
+                    >
+                      {row.status}
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      {/* 赛道入口 */}
+      <section>
+        <h2 className="mb-6 text-xl font-bold text-blue-900">🏁 赛道入口</h2>
+        <div className="grid gap-6 sm:grid-cols-2">
+          {/* AI纠错 */}
+          <Link
+            to="/debug"
+            className="group rounded-xl border border-gray-200 bg-white p-6 shadow-md transition-all hover:shadow-lg hover:border-blue-300"
+          >
+            <div className="mb-3 flex items-center justify-between">
+              <h3 className="text-lg font-bold text-blue-900 group-hover:text-blue-600">🔍 AI纠错</h3>
+              <span className="text-sm text-gray-500">PRO-DBG</span>
+            </div>
+            <p className="mb-4 text-sm text-gray-600">
+              修复含 Bug 的代码程序，涵盖 Python、SQLite 和 C 语言三个难度等级。
+            </p>
+            <div className="flex flex-wrap gap-2">
+              <ScoreBadge level="L1" score={20} />
+              <ScoreBadge level="L2" score={35} />
+              <ScoreBadge level="L3" score={45} />
+            </div>
+          </Link>
+
+          {/* CLI部署 */}
+          <Link
+            to="/cli"
+            className="group rounded-xl border border-gray-200 bg-white p-6 shadow-md transition-all hover:shadow-lg hover:border-blue-300"
+          >
+            <div className="mb-3 flex items-center justify-between">
+              <h3 className="text-lg font-bold text-blue-900 group-hover:text-blue-600">⚡ CLI部署开发</h3>
+              <span className="text-sm text-gray-500">PRO-CLI</span>
+            </div>
+            <p className="mb-4 text-sm text-gray-600">
+              使用 CLI 工具完成数据爬取、数据库分析和 Flask Web 应用开发。
+            </p>
+            <div className="flex flex-wrap gap-2">
+              <ScoreBadge level="L1" score={20} />
+              <ScoreBadge level="L2" score={35} />
+              <ScoreBadge level="L3" score={45} />
+            </div>
           </Link>
         </div>
-      </section>
-
-      {/* 赛程时间表 */}
-      <section className="section">
-        <h2>📅 赛程时间表</h2>
-        <div className="timeline">
-          <div className="timeline-item">
-            <div className="date">第一阶段：AI纠错</div>
-            <p>选手使用 AI 工具定位并修复代码中的 Bug，限时 30 / 60 / 90 分钟</p>
-          </div>
-          <div className="timeline-item">
-            <div className="date">第二阶段：CLI部署</div>
-            <p>选手使用 CLI 工具完成数据采集、分析与应用部署，限时 30 / 60 / 90 分钟</p>
-          </div>
-          <div className="timeline-item">
-            <div className="date">极客加分环节</div>
-            <p>自主接入 API / 部署 Ollama / 使用 OpenClaw 可获额外加分（最高 +30）</p>
-          </div>
-          <div className="timeline-item">
-            <div className="date">评分与排名</div>
-            <p>基础分 100 + 极客加分 30，总分最高 130 分</p>
-          </div>
-        </div>
-      </section>
-
-      {/* 赛道快速入口 */}
-      <section className="section">
-        <h2>🏁 赛道快速入口</h2>
-        <div className="card-grid">
-          <div className="card">
-            <h3>🔧 赛项一：AI纠错 (PRO-DBG)</h3>
-            <p>
-              扮演"AI 调试助手"，利用 AI 代码助手定位并修复源代码中的 Bug。
-              覆盖 Python、SQLite、C 语言三个难度级别。
-            </p>
-            <table className="data-table" style={{ marginTop: '0.75rem' }}>
-              <thead>
-                <tr><th>级别</th><th>项目</th><th>分值</th></tr>
-              </thead>
-              <tbody>
-                <tr><td><span className="badge badge-green">L1</span></td><td>库存检查工具 (Python)</td><td>20</td></tr>
-                <tr><td><span className="badge badge-orange">L2</span></td><td>SQLite 成绩查询</td><td>35</td></tr>
-                <tr><td><span className="badge badge-red">L3</span></td><td>学生管理系统 (C语言)</td><td>45</td></tr>
-              </tbody>
-            </table>
-            <Link to="/debug" className="card-link">查看详情 →</Link>
-          </div>
-
-          <div className="card">
-            <h3>⚡ 赛项二：CLI部署 (PRO-CLI)</h3>
-            <p>
-              使用 AI 命令行工具完成数据采集、数据库分析与 Web 应用部署。
-              仅允许使用 CLI 工具，禁用 VSCode 插件。
-            </p>
-            <table className="data-table" style={{ marginTop: '0.75rem' }}>
-              <thead>
-                <tr><th>级别</th><th>项目</th><th>分值</th></tr>
-              </thead>
-              <tbody>
-                <tr><td><span className="badge badge-green">L1</span></td><td>Python 网页爬虫</td><td>20</td></tr>
-                <tr><td><span className="badge badge-orange">L2</span></td><td>数据库分析 (Python+SQL)</td><td>35</td></tr>
-                <tr><td><span className="badge badge-red">L3</span></td><td>Flask Web 应用</td><td>45</td></tr>
-              </tbody>
-            </table>
-            <Link to="/cli" className="card-link">查看详情 →</Link>
-          </div>
-        </div>
-      </section>
-
-      {/* 最新公告 */}
-      <section className="section">
-        <h2>📢 最新公告</h2>
-        <ul className="notice-list">
-          <li>
-            🏁 大赛赛题仓库已正式发布，所有题目与测试脚本均可下载
-            <span>2026-03-23</span>
-          </li>
-          <li>
-            📋 请所有参赛选手提前配置好 Python 3.8+ 环境及 AI 代码助手
-            <span>2026-03-23</span>
-          </li>
-          <li>
-            ⚠️ CLI部署赛项仅允许使用 CLI 工具，禁止使用 VSCode 插件
-            <span>2026-03-23</span>
-          </li>
-        </ul>
       </section>
     </div>
   )
 }
-
-export default Home
