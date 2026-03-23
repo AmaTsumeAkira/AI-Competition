@@ -3,3 +3,4 @@ student_mgr
 *.db
 node_modules/
 web/dist/
+web/tsconfig.tsbuildinfo
