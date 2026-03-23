@@ -1,134 +1,85 @@
-#!/usr/bin/env python3
 """
-库存预警检查脚本
-功能：读取 CSV 库存数据，检查低库存商品并生成预警报告
-
-⚠️ 本脚本包含若干 Bug，选手需使用 AI 工具定位并修复。
-
-使用方法：
-    python3 inventory_checker.py data.csv [--threshold 10]
-
-参数：
-    data.csv       库存数据文件路径
-    --threshold    低库存预警阈值（默认 10）
-
-输出：
-    预警报告打印到标准输出
+库存检查工具
+功能：读取库存数据，找出低于安全库存的商品并提示补货
 """
-import csv
-import sys
-import argparse
-from collections import defaultdict
 
-
-def load_inventory(csv_path):
+def load_inventory(filename):
     """
     从 CSV 文件加载库存数据
-    
-    CSV 格式：商品名,类别,数量,单价
-    返回：商品字典列表
+    CSV 格式：商品名称,当前库存,安全库存阈值
     """
     inventory = []
-    with open(csv_path, 'r', encoding='utf-8') as f:
-        reader = csv.DictReader(f)
-        for row in reader:
-            item = {
-                "name": row["商品名"],
-                "category": row["类别"],
-                "quantity": int(row["数量"]),
-                "price": float(row["单价"]),
-                "value": int(row["数量"]) * float(row["单价"])
-            }
-            inventory.append(item)
+    with open(filename, 'r', encoding='utf-8') as f:
+        next(f)  # 跳过表头
+        for line in f:
+            parts = line.strip().split(',')
+            if len(parts) == 3:
+                name = parts[0]
+                current = int(parts[1])
+                threshold = int(parts[2])
+                inventory.append({'name': name, 'current': current, 'threshold': threshold})
     return inventory
 
 
-def check_low_stock(inventory, threshold):
+def check_low_stock(inventory):
     """
-    检查低库存商品
-    
-    返回：低于阈值的商品列表，按数量升序排列
+    检查库存是否低于安全阈值
+    返回需要补货的商品列表
     """
-    low_stock = []
+    low_stock_items = []
     for item in inventory:
-        if item["quantitiy"] < threshold:  # BUG①：键名拼写错误，应为 "quantity"
-            low_stock.append(item)
-    
-    # 按数量升序排列
-    low_stock_sorted = sorted(low_stock, key=lambda x: x["quantity"])
-    return low_stock_sorted
+        # Bug 1（边界错误）：这里用了 >= 而不是 >，导致刚好等于阈值也算"需要补货"
+        if item['current'] >= item['threshold']:
+            low_stock_items.append(item)
+    return low_stock_items
 
 
-def get_most_valuable(inventory):
+def suggest_reorder(low_stock_items):
     """
-    获取库存总价值最高的商品
-    
-    返回：价值最高的商品
+    生成补货建议
+    建议补货数量 = 安全阈值 * 2 - 当前库存
     """
-    sorted_by_value = sorted(inventory, key=lambda x: x["value"], reverse=True)
-    return sorted_by_value[-1]  # BUG②：空列表时索引越界，应为 [0]
+    suggestions = []
+    for item in low_stock_items:
+        # Bug 2（逻辑错误）：变量名写错了，把 threshold 拼成了 threshod
+        qty = item['threshod'] * 2 - item['current']
+        suggestions.append({
+            'name': item['name'],
+            'suggested_qty': qty
+        })
+    return suggestions
 
 
-def generate_report(inventory, low_stock, top_item):
-    """
-    生成库存预警报告
-    """
-    report = []
-    report.append("=" * 50)
-    report.append("库存预警报告")
-    report.append("=" * 50)
-    report.append(f"商品总数：{len(inventory)}")
-    report.append(f"低库存预警：{len(low_stock)} 件")
-    report.append("")
-    
-    if low_stock:
-        report.append("【低库存商品】")
-        for item in low_stock:
-            report.append(f"  - {item['name']}：剩余 {item['quantity']} 件（价值 ¥{item['value']:.2f}）")
-        report.append("")
-    
-    report.append(f"【库存价值最高】")
-    report.append(f"  {top_item['name']}：{top_item['quantity']} 件 × ¥{top_item['price']:.2f} = ¥{top_item['value']:.2f}")
-    report.append("")
-    
-    # 按类别统计
-    categories = defaultdict(lambda: {"count": 0, "total_value": 0})
-    for item in inventory:
-        cat = item["category"]
-        categories[cat]["count"] += 1
-        categories[cat]["total_value"] += item["value"]
-    
-    report.append("【分类统计】")
-    for cat, stats in sorted(categories.items()):
-        report.append(f"  {cat}：{stats['count']} 种商品，总价值 ¥{stats['total_value']:.2f}")
-    
-    return "\n".join(report)
+def print_report(low_stock_items, suggestions):
+    """打印补货报告"""
+    if len(low_stock_items) == 0:
+        print("✓ 库存充足，无需补货")
+        return
+
+    print(f"⚠  共有 {len(low_stock_items)} 种商品需要补货：\n")
+    print(f"{'商品名称':<15} {'当前库存':<10} {'阈值':<10} {'建议补货量':<10}")
+    print("-" * 50)
+    for i, item in enumerate(low_stock_items):
+        sug = suggestions[i]['suggested_qty']
+        print(f"{item['name']:<15} {item['current']:<10} {item['threshold']:<10} {sug:<10}")
 
 
 def main():
-    parser = argparse.ArgumentParser(description="库存预警检查")
-    parser.add_argument("csv_file", help="CSV 库存数据文件路径")
-    parser.add_argument("--threshold", type=int, default=10, help="低库存预警阈值")
-    args = parser.parse_args()
-    
-    try:
-        inventory = load_inventory(args.csv_file)
-    except FileNotFoundError:
-        print(f"错误：文件 {args.csv_file} 不存在")
-        sys.exit(1)
-    except Exception as e:
-        print(f"错误：读取文件失败 - {e}")
-        sys.exit(1)
-    
-    if not inventory:
-        print("提示：库存数据为空")
-        sys.exit(0)
-    
-    low_stock = check_low_stock(inventory, args.threshold)
-    top_item = get_most_valuable(inventory)
-    report = generate_report(inventory, low_stock, top_item)
-    print(report)
+    """主函数"""
+    filename = 'test_data.csv'
+
+    # 加载库存数据
+    inventory = load_inventory(filename)
+
+    # 检查低库存商品
+    low_stock_items = check_low_stock(inventory)
+
+    # 生成补货建议
+    suggestions = suggest_reorder(low_stock_items)
+
+    # 打印报告
+    print_report(low_stock_items, suggestions)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()

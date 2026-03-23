@@ -1,74 +1,141 @@
-#!/usr/bin/env python3
 """
-AI纠错 L1 测试用例
-选手无需修改本文件
+库存检查工具 - 自动测试脚本
+验证修复后的代码是否正确
+"""
 
-测试用例：
-1. 正常数据 - 基本功能验证
-2. 空文件 - 边界条件
-3. 特殊字符 - 编码兼容性
-4. 低阈值 - 阈值参数测试
-5. 单商品 - 最小数据集
-"""
-import subprocess
-import os
 import sys
+import os
 
-SCRIPT = os.path.join(os.path.dirname(__file__), "inventory_checker.py")
-DATA_DIR = os.path.dirname(__file__)
+# 确保当前目录的 inventory_checker 可以被导入
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-def run_test(name, csv_file, args="", expected_exit=0):
-    """运行单个测试用例"""
-    csv_path = os.path.join(DATA_DIR, csv_file)
-    cmd = f"python3 {SCRIPT} {csv_path} {args}"
+def test_check_low_stock():
+    """测试低库存检查逻辑"""
+    # 模拟测试数据
+    test_inventory = [
+        {'name': '商品A', 'current': 50, 'threshold': 100},   # 需要补货
+        {'name': '商品B', 'current': 100, 'threshold': 100},  # 刚好等于阈值，不需要补货
+        {'name': '商品C', 'current': 200, 'threshold': 100},  # 超过阈值，不需要补货
+        {'name': '商品D', 'current': 30, 'threshold': 50},   # 需要补货
+    ]
+
+    from inventory_checker import check_low_stock
+    result = check_low_stock(test_inventory)
+
+    # 商品A和商品D应该需要补货（当前库存 < 阈值）
+    expected_names = {'商品A', '商品D'}
+    actual_names = {item['name'] for item in result}
+
+    if actual_names != expected_names:
+        print(f"✗ 测试失败：低库存判断错误")
+        print(f"  期望：{expected_names}")
+        print(f"  实际：{actual_names}")
+        return False
+
+    print("✓ 测试通过：低库存判断逻辑正确")
+    return True
+
+
+def test_suggest_reorder():
+    """测试补货建议生成"""
+    test_low_stock = [
+        {'name': '商品X', 'current': 30, 'threshold': 100},
+        {'name': '商品Y', 'current': 0, 'threshold': 50},
+    ]
+
+    from inventory_checker import suggest_reorder
+
     try:
-        result = subprocess.run(cmd, shell=True, capture_output=True, text=True, timeout=10)
-        passed = result.returncode == expected_exit
-        status = "✅ PASS" if passed else "❌ FAIL"
-        print(f"{status} | {name}")
-        if not passed:
-            print(f"  期望退出码: {expected_exit}, 实际: {result.returncode}")
-            if result.stderr:
-                print(f"  错误: {result.stderr[:200]}")
-        return passed
-    except subprocess.TimeoutExpired:
-        print(f"❌ FAIL | {name} (超时)")
+        suggestions = suggest_reorder(test_low_stock)
+
+        # 商品X: 建议补货量 = 100*2 - 30 = 170
+        # 商品Y: 建议补货量 = 50*2 - 0 = 100
+        expected = {170, 100}
+        actual = {s['suggested_qty'] for s in suggestions}
+
+        if actual != expected:
+            print(f"✗ 测试失败：补货建议计算错误")
+            print(f"  期望：{expected}")
+            print(f"  实际：{actual}")
+            return False
+
+        print("✓ 测试通过：补货建议计算正确")
+        return True
+
+    except KeyError as e:
+        print(f"✗ 测试失败：变量名错误（KeyError: {e}）")
         return False
     except Exception as e:
-        print(f"❌ FAIL | {name} (异常: {e})")
+        print(f"✗ 测试失败：{type(e).__name__}: {e}")
         return False
 
 
-# 创建测试数据文件
-# 空CSV（只有表头）
-with open(os.path.join(DATA_DIR, "test_empty.csv"), "w") as f:
-    f.write("商品名,类别,数量,单价\n")
+def test_load_inventory():
+    """测试数据加载"""
+    from inventory_checker import load_inventory
 
-# 单商品
-with open(os.path.join(DATA_DIR, "test_single.csv"), "w") as f:
-    f.write("商品名,类别,数量,单价\n苹果,水果,5,3.5\n")
+    try:
+        inventory = load_inventory('test_data.csv')
+        if len(inventory) == 0:
+            print("✗ 测试失败：未能加载数据")
+            return False
+        print(f"✓ 测试通过：成功加载 {len(inventory)} 条库存记录")
+        return True
+    except Exception as e:
+        print(f"✗ 测试失败：{type(e).__name__}: {e}")
+        return False
 
-# 特殊字符
-with open(os.path.join(DATA_DIR, "test_special.csv"), "w") as f:
-    f.write("商品名,类别,数量,单价\n苹果（红富士）,水果,10,3.5\n可口可乐®,,饮品,20,3.0\n")
 
-# 运行测试
-print("=" * 50)
-print("AI纠错 L1 测试套件")
-print("=" * 50)
+def test_main_output():
+    """测试主程序输出（无异常退出）"""
+    import io
+    import sys
+    from inventory_checker import main
 
-results = []
-results.append(run_test("正常数据-基本功能", "test_data_normal.csv"))
-results.append(run_test("空文件-边界条件", "test_empty.csv"))
-results.append(run_test("特殊字符-编码兼容", "test_special.csv"))
-results.append(run_test("低阈值-参数测试", "test_data_normal.csv", "--threshold 5"))
-results.append(run_test("单商品-最小数据集", "test_single.csv"))
+    try:
+        # 捕获标准输出
+        old_stdout = sys.stdout
+        sys.stdout = io.StringIO()
+        main()
+        output = sys.stdout.getvalue()
+        sys.stdout = old_stdout
 
-print("=" * 50)
-passed = sum(results)
-total = len(results)
-print(f"结果：{passed}/{total} 通过")
-if passed >= 3:
-    print("✅ 满足晋级条件（≥3/5）")
-else:
-    print("❌ 未满足晋级条件（需≥3/5）")
+        # 检查输出是否包含预期内容（低库存商品）
+        if '螺丝M4' in output or '电工胶带' in output or '电池AAA' in output or 'LED灯珠' in output or '电容10uF' in output or '传感器模块' in output or '继电器' in output:
+            print("✓ 测试通过：主程序正常运行，输出合理")
+            return True
+        else:
+            print("✗ 测试失败：主程序输出异常")
+            return False
+    except KeyError as e:
+        sys.stdout = old_stdout
+        print(f"✗ 测试失败：变量名错误（KeyError: {e}）")
+        return False
+    except Exception as e:
+        sys.stdout = old_stdout
+        print(f"✗ 测试失败：{type(e).__name__}: {e}")
+        return False
+
+
+if __name__ == '__main__':
+    print("=" * 50)
+    print("库存检查工具 - 自动测试")
+    print("=" * 50)
+    print()
+
+    results = []
+    results.append(test_load_inventory())
+    results.append(test_check_low_stock())
+    results.append(test_suggest_reorder())
+    results.append(test_main_output())
+
+    print()
+    print("=" * 50)
+    passed = sum(results)
+    total = len(results)
+    print(f"测试结果：{passed}/{total} 通过")
+    if passed == total:
+        print("🎉 所有测试通过！")
+    else:
+        print(f"⚠  还有 {total - passed} 项测试失败，请继续修复")
+    print("=" * 50)
