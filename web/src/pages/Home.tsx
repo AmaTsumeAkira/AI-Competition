@@ -56,14 +56,15 @@ export default function Home() {
           </div>
 
           <h1 className="text-center text-5xl font-extrabold tracking-tight text-gray-900 sm:text-6xl lg:text-7xl">
-            open study<br />
+            AI素养大赛<br />
+<span className="text-blue-200">· 专业赛道</span>
             <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-              全国大学生跨学科细胞生物学竞赛
+              全国大学生 AI 素养竞赛 · 专业赛道
             </span>
           </h1>
 
           <p className="mx-auto mt-6 max-w-2xl text-center text-lg text-gray-500">
-            面向全国大学生，推动跨学科创新，激发细胞生物学研究热情
+            面向全国大学生，以赛促学，提升 AI 辅助编程与工具驾驭能力
           </p>
 
           {/* CTA */}
