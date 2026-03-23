@@ -8,6 +8,9 @@ export default function Header() {
     { href: '/debug', label: 'AI纠错赛项' },
     { href: '/cli', label: 'CLI部署赛项' },
     { href: '/rules', label: '评分规则' },
+    { href: '/guide', label: '操作指引' },
+    { href: '/environment', label: '环境搭建' },
+    { href: '/bonus', label: '极客加分' },
     { href: '/about', label: '关于' },
   ]
 
@@ -25,7 +28,7 @@ export default function Header() {
           <span className="text-base font-bold tracking-tight text-blue-900">AI素养大赛<span className="text-blue-500">·专业赛道</span></span>
         </a>
 
-        <nav className="hidden md:flex items-center gap-1 text-sm">
+        <nav className="hidden lg:flex items-center gap-1 text-sm">
           {navItems.map((item) => (
             <a
               key={item.href}
@@ -37,7 +40,7 @@ export default function Header() {
           ))}
         </nav>
 
-        <button className="md:hidden p-2 rounded-lg hover:bg-gray-100" onClick={() => setMenuOpen(!menuOpen)}>
+        <button className="lg:hidden p-2 rounded-lg hover:bg-gray-100" onClick={() => setMenuOpen(!menuOpen)}>
           <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             {menuOpen ? (
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -49,7 +52,7 @@ export default function Header() {
       </div>
 
       {menuOpen && (
-        <nav className="md:hidden bg-white border-t border-gray-100 px-4 py-3 space-y-1">
+        <nav className="lg:hidden bg-white border-t border-gray-100 px-4 py-3 space-y-1">
           {navItems.map((item) => (
             <a key={item.href} href={`#${item.href}`} className="block py-2.5 px-3 rounded-lg text-gray-700 hover:bg-blue-50 font-medium" onClick={() => setMenuOpen(false)}>
               {item.label}

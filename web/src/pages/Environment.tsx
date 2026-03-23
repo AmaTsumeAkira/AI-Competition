@@ -1,0 +1,194 @@
+interface EnvSectionProps {
+  icon: string
+  title: string
+  description: string
+  installCommand: string
+  verifyCommand: string
+  faq?: { q: string; a: string }[]
+}
+
+function EnvSection({ icon, title, description, installCommand, verifyCommand, faq }: EnvSectionProps) {
+  return (
+    <div className="bg-white rounded-xl border border-gray-200 overflow-hidden mb-6">
+      <div className="px-6 py-4 bg-gray-50 border-b border-gray-200">
+        <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+          <span className="text-2xl">{icon}</span>
+          {title}
+        </h3>
+        <p className="text-sm text-gray-500 mt-1">{description}</p>
+      </div>
+      <div className="p-6 space-y-4">
+        <div>
+          <p className="text-sm font-semibold text-gray-700 mb-2">安装命令</p>
+          <div className="bg-gray-900 rounded-lg p-3 relative group">
+            <code className="text-green-400 text-sm block whitespace-pre-wrap">{installCommand}</code>
+            <button
+              onClick={() => navigator.clipboard.writeText(installCommand)}
+              className="absolute top-2 right-2 text-xs text-gray-500 hover:text-white bg-gray-800 px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity"
+            >
+              复制
+            </button>
+          </div>
+        </div>
+        <div>
+          <p className="text-sm font-semibold text-gray-700 mb-2">验证命令</p>
+          <div className="bg-gray-900 rounded-lg p-3 relative group">
+            <code className="text-green-400 text-sm block whitespace-pre-wrap">{verifyCommand}</code>
+            <button
+              onClick={() => navigator.clipboard.writeText(verifyCommand)}
+              className="absolute top-2 right-2 text-xs text-gray-500 hover:text-white bg-gray-800 px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity"
+            >
+              复制
+            </button>
+          </div>
+        </div>
+        {faq && faq.length > 0 && (
+          <div>
+            <p className="text-sm font-semibold text-gray-700 mb-2">常见问题</p>
+            <div className="space-y-2">
+              {faq.map((item, i) => (
+                <div key={i} className="bg-amber-50 border border-amber-200 rounded-lg p-3">
+                  <p className="text-sm font-medium text-amber-800 mb-1">Q: {item.q}</p>
+                  <p className="text-xs text-amber-700">A: {item.a}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+export default function Environment() {
+  const sections: EnvSectionProps[] = [
+    {
+      icon: '🐍',
+      title: 'Python 环境',
+      description: 'Python 3.8+ 是比赛的基础运行环境，几乎所有赛题都需要 Python 支持。',
+      installCommand: `# Ubuntu/Debian
+sudo apt update && sudo apt install python3 python3-pip python3-venv
+
+# macOS (使用 Homebrew)
+brew install python@3.11
+
+# Windows
+# 从 https://www.python.org/downloads/ 下载安装包
+
+# 配置 pip 清华镜像（加速依赖安装）
+pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple/`,
+      verifyCommand: `python3 --version
+pip3 --version
+python3 -c "import sys; print(sys.executable)"`,
+      faq: [
+        { q: 'python3 命令找不到', a: '尝试使用 python 代替 python3，或检查 PATH 环境变量' },
+        { q: 'pip 安装很慢', a: '使用清华镜像：pip install -i https://pypi.tuna.tsinghua.edu.cn/simple/ package_name' },
+        { q: '权限不足', a: '使用 --user 参数：pip install --user package_name，或创建虚拟环境' },
+      ],
+    },
+    {
+      icon: '🔧',
+      title: 'C 编译环境',
+      description: 'Level 3 决赛赛题涉及 C 语言代码，需要 GCC 编译器。',
+      installCommand: `# Ubuntu/Debian
+sudo apt install build-essential gcc
+
+# macOS
+xcode-select --install
+
+# 验证
+gcc --version`,
+      verifyCommand: `gcc --version
+# 编译测试
+echo '#include <stdio.h>
+int main() { printf("Hello GCC\\n"); return 0; }' > test.c
+gcc test.c -o test && ./test && rm test test.c`,
+      faq: [
+        { q: 'gcc 命令找不到', a: 'Ubuntu: sudo apt install build-essential | macOS: xcode-select --install' },
+        { q: '编译警告太多', a: '比赛关注的是 Bug 修复正确性，编译警告不影响评分但建议清理' },
+      ],
+    },
+    {
+      icon: '🗃️',
+      title: 'SQLite 基础',
+      description: '部分赛题使用 SQLite 作为轻量级数据库，需要了解基本操作。',
+      installCommand: `# Ubuntu/Debian
+sudo apt install sqlite3
+
+# macOS
+brew install sqlite
+
+# Python SQLite 支持（通常内置）
+python3 -c "import sqlite3; print(sqlite3.sqlite_version)"`,
+      verifyCommand: `sqlite3 --version
+# 基本操作测试
+sqlite3 :memory: "CREATE TABLE test(id INTEGER PRIMARY KEY, name TEXT); INSERT INTO test VALUES(1,'hello'); SELECT * FROM test;"`,
+      faq: [
+        { q: 'Python 的 sqlite3 模块不可用', a: '通常内置，如缺失需重新编译 Python 并启用 sqlite 支持' },
+      ],
+    },
+    {
+      icon: '🌐',
+      title: 'Flask 依赖',
+      description: 'CLI 赛道的 Level 3 使用 Flask 框架构建 Web 应用。',
+      installCommand: `# 创建虚拟环境（推荐）
+python3 -m venv venv
+source venv/bin/activate  # Linux/macOS
+# venv\\Scripts\\activate   # Windows
+
+# 安装 Flask
+pip install flask flask-cors
+
+# 或一次性安装所有依赖
+pip install -i https://pypi.tuna.tsinghua.edu.cn/simple/ flask flask-cors`,
+      verifyCommand: `python3 -c "import flask; print(f'Flask {flask.__version__}')"
+python3 -c "import flask_cors; print(f'Flask-CORS OK')"`,
+      faq: [
+        { q: 'Flask 版本不兼容', a: '使用 pip install flask==2.3.0 安装指定版本' },
+        { q: '端口被占用', a: '使用 lsof -i :5000 查看占用进程，或修改 app.py 中的端口号' },
+      ],
+    },
+  ]
+
+  return (
+    <div className="min-h-screen bg-gray-50 pt-20 pb-16">
+      <div className="max-w-4xl mx-auto px-4">
+        <div className="mb-10">
+          <p className="text-sm font-semibold text-blue-600 uppercase tracking-wider mb-2">Environment</p>
+          <h1 className="text-3xl font-bold text-blue-900 mb-3">环境搭建</h1>
+          <p className="text-gray-500">比赛所需的开发环境与工具安装指南</p>
+        </div>
+
+        {/* 快速检查清单 */}
+        <div className="bg-blue-50 border border-blue-200 rounded-xl p-6 mb-8">
+          <h2 className="text-lg font-bold text-blue-900 mb-3">⚡ 快速检查清单</h2>
+          <p className="text-sm text-blue-800 mb-4">比赛开始前，请确保以下环境已就绪：</p>
+          <div className="grid gap-2 sm:grid-cols-2">
+            {['Python 3.8+', 'pip（配置清华镜像）', 'GCC 编译器', 'Git', '网络连接正常', 'AI工具已安装'].map((item) => (
+              <label key={item} className="flex items-center gap-2 text-sm text-blue-800">
+                <input type="checkbox" className="rounded border-blue-300" />
+                {item}
+              </label>
+            ))}
+          </div>
+        </div>
+
+        {sections.map((section) => (
+          <EnvSection key={section.title} {...section} />
+        ))}
+
+        {/* 通用建议 */}
+        <div className="bg-white rounded-xl border border-gray-200 p-6">
+          <h3 className="text-lg font-bold text-gray-900 mb-4">📋 环境搭建通用建议</h3>
+          <ul className="space-y-2 text-sm text-gray-600">
+            <li className="flex gap-2"><span className="text-blue-500">1.</span>始终使用虚拟环境隔离项目依赖，避免系统级污染</li>
+            <li className="flex gap-2"><span className="text-blue-500">2.</span>比赛前在家预装好所有依赖，比赛时只做增量更新</li>
+            <li className="flex gap-2"><span className="text-blue-500">3.</span>保持网络畅通，部分 AI 工具需要在线 API 调用</li>
+            <li className="flex gap-2"><span className="text-blue-500">4.</span>准备一个干净的开发环境，避免已有项目干扰</li>
+            <li className="flex gap-2"><span className="text-blue-500">5.</span>提前熟悉终端操作，CLI 赛道全程在终端中完成</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  )
+}
