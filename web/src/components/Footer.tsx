@@ -13,7 +13,12 @@ export default function Footer() {
             </div>
             <span className="text-sm font-medium text-gray-500">AI素养大赛 · 专业赛道</span>
           </div>
-          <p className="text-sm text-gray-400">© 2026 AI素养大赛组委会. 保留所有权利。</p>
+          <div className="flex flex-col items-center gap-1 sm:items-end">
+            <p className="text-sm text-gray-400">© 2026 AI素养大赛组委会. 保留所有权利。</p>
+            <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer" className="text-xs text-gray-400 hover:text-gray-600 transition-colors">
+              陕ICP备20011108号-2
+            </a>
+          </div>
         </div>
       </div>
     </footer>
