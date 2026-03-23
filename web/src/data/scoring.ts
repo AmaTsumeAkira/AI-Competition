@@ -430,11 +430,12 @@ export const OLLAMA_REF: OllamaRef = {
 // ---------- OpenClaw 参考数据 ----------
 
 export const OPENCLAW_REF: OpenClawRef = {
-  installUrl: 'https://github.com/openclaw-dev/openclaw',
-  docUrl: 'https://openclaw.dev/docs',
+  installUrl: 'https://github.com/OpenClaw/OpenClaw',
+  docUrl: 'https://docs.openclaw.ai',
   verificationSteps: [
-    '安装 OpenClaw CLI：curl -fsSL https://openclaw.dev/install.sh | sh',
-    '配置 AI Provider：openclaw config set provider ollama',
+    '克隆仓库：git clone https://github.com/OpenClaw/OpenClaw.git',
+    '安装依赖：cd OpenClaw && npm install',
+    '配置 AI Provider：修改配置文件切换 API 路由与密钥',
     '验证安装：openclaw --version',
   ],
   capabilities: [
