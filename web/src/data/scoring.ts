@@ -399,18 +399,18 @@ export const GEEK_BONUSES: GeekBonus[] = [
 // ---------- 12个推荐API平台 ----------
 
 export const API_PLATFORMS: APIPlatform[] = [
-  { id: 'deepseek', name: 'DeepSeek', website: 'https://platform.deepseek.com', apiDocUrl: 'https://platform.deepseek.com/docs', keyManagementUrl: 'https://platform.deepseek.com/api_keys', notes: '推荐模型：DeepSeek-Coder' },
-  { id: 'siliconflow', name: '硅基流动', website: 'https://siliconflow.cn', apiDocUrl: 'https://docs.siliconflow.cn', keyManagementUrl: 'https://account.siliconflow.cn', notes: '支持多种开源模型' },
-  { id: 'qianwen', name: '通义千问', website: 'https://qwenlm.cn', apiDocUrl: 'https://help.aliyun.com/zh/dashscope', keyManagementUrl: 'https://dashscope.console.aliyun.com', notes: '阿里云百炼平台' },
-  { id: 'mimo', name: '小米MiMo', website: 'https://mimo.ai', apiDocUrl: 'https://mimo.ai/docs', keyManagementUrl: 'https://mimo.ai/apikeys', notes: 'MiniMax出品' },
-  { id: 'baichuan', name: '百川大模型', website: 'https://www.baichuan-ai.com', apiDocUrl: 'https://www.baichuan-ai.com/docs', keyManagementUrl: 'https://www.baichuan-ai.com/home#api-key', notes: '百川智能' },
-  { id: 'kimi', name: 'Kimi', website: 'https://kimi.moonshot.cn', apiDocUrl: 'https://kimi.moonshot.cn/docs', keyManagementUrl: 'https://kimi.moonshot.cn/console/api_keys', notes: '月之暗面Moonshot' },
-  { id: 'zhipu', name: '智谱AI', website: 'https://www.zhipuai.cn', apiDocUrl: 'https://open.bigmodel.cn/dev/api', keyManagementUrl: 'https://open.bigmodel.cn/usercenter/apikeys', notes: 'GLM系列模型' },
-  { id: 'wenxin', name: '文心一言', website: 'https://yiyan.baidu.com', apiDocUrl: 'https://cloud.baidu.com/doc/WENXINWORKSHOP', keyManagementUrl: 'https://console.bce.baidu.com', notes: '百度ERNIE系列' },
-  { id: 'doubao', name: '豆包', website: 'https://www.doubao.com', apiDocUrl: 'https://www.volcengine.com/docs/82379/1399008', keyManagementUrl: 'https://console.volcengine.com/ark', notes: '字节跳动火山引擎' },
-  { id: 'hunyuan', name: '腾讯混元', website: 'https://hunyuan.tencent.com', apiDocUrl: 'https://cloud.tencent.com/document/product/1729', keyManagementUrl: 'https://console.cloud.tencent.com/hunyuan', notes: '腾讯云混元大模型' },
-  { id: 'spark', name: '讯飞星火', website: 'https://xinghuo.xfyun.cn', apiDocUrl: 'https://www.xfyun.cn/doc', keyManagementUrl: 'https://console.xfyun.cn', notes: '科大讯飞星火认知大模型' },
-  { id: 'openrouter', name: 'OpenRouter', website: 'https://openrouter.ai', apiDocUrl: 'https://openrouter.ai/docs', keyManagementUrl: 'https://openrouter.ai/keys', notes: '聚合多模型，支持OpenAI兼容接口' },
+  { id: 'deepseek', name: 'DeepSeek（深度求索）', website: 'https://platform.deepseek.com', apiDocUrl: 'https://platform.deepseek.com/api-docs', keyManagementUrl: 'https://platform.deepseek.com/api_keys', notes: 'DeepSeek系列模型' },
+  { id: 'siliconflow', name: '硅基流动（SiliconFlow）', website: 'https://cloud.siliconflow.cn', apiDocUrl: 'https://docs.siliconflow.cn', keyManagementUrl: 'https://cloud.siliconflow.cn/account/ak', notes: '开源模型推理平台' },
+  { id: 'qianwen', name: '千问百炼（阿里云）', website: 'https://bailian.console.aliyun.com', apiDocUrl: 'https://help.aliyun.com/zh/model-studio/', keyManagementUrl: 'https://bailian.console.aliyun.com/#/api-key', notes: '通义千问系列模型' },
+  { id: 'mimo', name: '小米MiMo', website: 'https://platform.xiaomimimo.com', apiDocUrl: 'https://platform.xiaomimimo.com/#/docs/welcome', keyManagementUrl: 'https://platform.xiaomimimo.com/#/console/balance', notes: '小米MiMo模型' },
+  { id: 'baichuan', name: '百川智能', website: 'https://platform.baichuan-ai.com', apiDocUrl: 'https://platform.baichuan-ai.com/docs/api', keyManagementUrl: 'https://platform.baichuan-ai.com/console/apikey', notes: '百川系列模型' },
+  { id: 'kimi', name: 'Kimi（月之暗面）', website: 'https://platform.moonshot.cn', apiDocUrl: 'https://platform.moonshot.cn/docs', keyManagementUrl: 'https://platform.moonshot.cn/console/api-keys', notes: 'Moonshot系列模型' },
+  { id: 'zhipu', name: '智谱AI', website: 'https://open.bigmodel.cn', apiDocUrl: 'https://open.bigmodel.cn/dev/api', keyManagementUrl: 'https://open.bigmodel.cn/usercenter/apikeys', notes: 'GLM系列模型' },
+  { id: 'wenxin', name: '百度文心（千帆）', website: 'https://cloud.baidu.com', apiDocUrl: 'https://cloud.baidu.com/doc/index.html', keyManagementUrl: 'https://console.bce.baidu.com/qianfan/ais/console/applicationConsole/application', notes: '文心大模型系列' },
+  { id: 'doubao', name: '字节豆包（火山方舟）', website: 'https://www.volcengine.com', apiDocUrl: 'https://www.volcengine.com/docs/82379', keyManagementUrl: 'https://console.volcengine.com/ark/region:ark+cn-beijing/apiKey', notes: '豆包系列模型' },
+  { id: 'hunyuan', name: '腾讯混元', website: 'https://cloud.tencent.com', apiDocUrl: 'https://cloud.tencent.com/document/product/1729', keyManagementUrl: 'https://console.cloud.tencent.com/cam/capi', notes: '腾讯混元大模型' },
+  { id: 'spark', name: '讯飞星火', website: 'https://www.xfyun.cn', apiDocUrl: 'https://www.xfyun.cn/doc/spark/Web.html', keyManagementUrl: 'https://console.xfyun.cn/services', notes: '星火认知大模型' },
+  { id: 'openrouter', name: 'OpenRouter', website: 'https://openrouter.ai', apiDocUrl: 'https://openrouter.ai/docs', keyManagementUrl: 'https://openrouter.ai/keys', notes: '多模型聚合路由平台' },
 ]
 
 // ---------- Ollama 参考数据 ----------
