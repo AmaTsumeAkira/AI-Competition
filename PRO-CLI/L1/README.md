@@ -33,8 +33,8 @@ pip install -i https://pypi.tuna.tsinghua.edu.cn/simple/ requests beautifulsoup4
 | 文件 | 说明 |
 |------|------|
 | `README.md` | 本文件 |
-| `scraper.py` | 选手编写的爬虫脚本 |
-| `quotes.csv` | 抓取结果 |
+| `scraper.py` | 起始模板（含 TODO 标记，请补充完善） |
+| `quotes.csv` | 抓取结果（选手生成） |
 | `test_runner.py` | 测试脚本（选手勿改） |
 
 ## 评分标准

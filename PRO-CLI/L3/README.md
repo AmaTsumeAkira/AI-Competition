@@ -17,7 +17,7 @@ pip install -i https://pypi.tuna.tsinghua.edu.cn/simple/ flask
 ### 基础任务（25分）
 1. 运行 `python init_app.py` 创建初始项目
 2. 修复 `app.py` 中的 3 个配置错误
-3. 编写 `deploy.sh`（Windows 用 `deploy.bat`）一键启动脚本
+3. 编写 `deploy.sh`（Linux/macOS）或 `deploy.bat`（Windows）一键启动脚本
 4. 编写 `test_api.py` 接口测试脚本
 5. 应用正常运行，所有接口返回正确数据
 
@@ -31,8 +31,8 @@ pip install -i https://pypi.tuna.tsinghua.edu.cn/simple/ flask
 | 文件 | 说明 |
 |------|------|
 | `init_app.py` | 项目初始化脚本（已提供） |
-| `app.py` | Flask 应用（含 3 个 Bug） |
-| `deploy.sh` | 选手编写的一键启动 |
+| `app.py` | Flask 应用（含 3 个 Bug，运行 init_app.py 后生成） |
+| `deploy.sh` / `deploy.bat` | 选手编写的一键启动（Linux/Windows） |
 | `test_api.py` | 选手编写的接口测试 |
 | `api_docs.md` | 选手编写的 API 文档 |
 
