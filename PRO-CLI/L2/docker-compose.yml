@@ -1,0 +1,60 @@
+version: '3.8'
+
+# Docker Compose 全栈部署配置
+# ⚠️ 根据模糊需求文档编写，部分配置需选手根据澄清结果调整
+
+services:
+  # 前端
+  frontend:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./frontend:/usr/share/nginx/html
+    depends_on:
+      - backend
+    networks:
+      - app-network
+
+  # 后端 API
+  backend:
+    image: python:3.11-slim
+    working_dir: /app
+    volumes:
+      - ./backend:/app
+    command: pip install -r requirements.txt && python app.py
+    environment:
+      - DB_HOST=database
+      - DB_PORT=5432
+      - DB_NAME=appdb
+      - DB_USER=admin
+      - DB_PASS=changeme  # ⚠️ 需要加密处理
+    depends_on:
+      - database
+    networks:
+      - app-network
+
+  # 数据库
+  database:
+    image: postgres:15
+    environment:
+      - POSTGRES_DB=appdb
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=changeme
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    networks:
+      - app-network
+
+  # Redis 缓存
+  redis:
+    image: redis:7-alpine
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  db_data:
