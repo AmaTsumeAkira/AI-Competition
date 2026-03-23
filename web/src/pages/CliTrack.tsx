@@ -1,15 +1,8 @@
 import Accordion from '../components/Accordion'
 import CodePreview from '../components/CodePreview'
+import DifficultyStars from '../components/DifficultyStars'
 import { cliLevels, cliCodeFiles } from '../data/cliTrack'
 import { cliTools } from '../data/tools'
-
-function DifficultyStars({ level }: { level: number }) {
-  return (
-    <span className="text-amber-500 tracking-wider">
-      {'★'.repeat(level)}{'☆'.repeat(5 - level)}
-    </span>
-  )
-}
 
 export default function CliTrack() {
   return (
@@ -102,6 +95,18 @@ export default function CliTrack() {
                   <ul className="list-disc list-inside space-y-1">
                     {level.deliverables.map((d, i) => (
                       <li key={i}>{d}</li>
+                    ))}
+                  </ul>
+                </>
+              )}
+
+              {/* 评判标准 */}
+              {level.standards && level.standards.length > 0 && (
+                <>
+                  <p className="font-semibold text-gray-800">评判标准：</p>
+                  <ul className="list-disc list-inside space-y-1">
+                    {level.standards.map((s, i) => (
+                      <li key={i}>{s}</li>
                     ))}
                   </ul>
                 </>

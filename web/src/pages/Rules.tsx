@@ -115,7 +115,7 @@ export default function Rules() {
         {/* 极客加分机制 */}
         <section className="mb-6">
           <h2 className="text-xl font-bold text-gray-900 mb-4">极客加分机制（统一加分项）</h2>
-          <p className="text-gray-600 text-sm mb-6">适用于<strong>两个赛项的所有阶段（初赛/复赛/决赛）</strong>。各加分项之间<strong>可叠加</strong>，上限30分。</p>
+          <p className="text-gray-600 text-sm mb-6">适用于<strong>两个赛项的所有阶段（初赛/复赛/决赛）</strong>。三个加分项<strong>可独立叠加</strong>：基础分100分 + 极客加分上限30分（API +10 + Ollama +12 + OpenClaw +8）= <strong>理论最高130分</strong>。</p>
 
           <div className="space-y-6">
             {/* 加分项一 */}
@@ -305,7 +305,7 @@ export default function Rules() {
               { id: 'R-02', text: '比赛期间禁止与场外人员通过任何方式（即时通讯、邮件、电话等）交流比赛内容' },
               { id: 'R-03', text: '选手不得在比赛前获取或窥探赛题内容，组委会将对赛题严格保密至比赛开始' },
               { id: 'R-04', text: '比赛全程将进行屏幕录制与操作日志留存，供赛后审查使用' },
-              { id: 'R-05', text: '选手应尊重竞赛环境，服从裁判指令，遵守赛场秩序与时间安排' },
+              { id: 'R-05', text: '选手应服从裁判指令，遵守赛场秩序与时间安排' },
               { id: 'R-06', text: '选手对AI工具生成的代码承担最终审查责任，须确保提交代码不含恶意内容或违法信息' },
             ].map((rule) => (
               <div key={rule.id} className="flex gap-3 p-3 bg-gray-50 rounded-lg">

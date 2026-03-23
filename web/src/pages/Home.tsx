@@ -55,6 +55,15 @@ export default function Home() {
         </div>
       </section>
 
+      {/* 大赛背景 */}
+      <section className="bg-white pt-16 pb-0">
+        <div className="mx-auto max-w-3xl px-6">
+          <p className="text-center text-gray-600 leading-relaxed text-base">
+            在人工智能技术深刻重塑软件工程范式的时代浪潮中，AI辅助编程能力已从"加分技能"跃升为"核心素养"。
+          </p>
+        </div>
+      </section>
+
       {/* 大赛宗旨 */}
       <section className="bg-white py-20">
         <div className="mx-auto max-w-5xl px-6">
@@ -89,7 +98,7 @@ export default function Home() {
                   label: 'Preliminaries',
                   color: 'bg-blue-600',
                   items: [
-                    { k: '形式', v: '线上/线下笔试 + 实操' },
+                    { k: '形式', v: '线下集中实操' },
                     { k: '时长', v: '60–90 分钟' },
                     { k: '晋级', v: '按赛项分别排名，取前50%选手晋级' },
                     { k: '核心能力', v: '基础能力' },
@@ -160,7 +169,7 @@ export default function Home() {
               </div>
               <h3 className="text-xl font-bold text-gray-900 mb-1">赛项一：AI纠错赛项</h3>
               <p className="text-sm font-medium text-blue-600 mb-3">PRO-DBG</p>
-              <p className="text-sm leading-relaxed text-gray-500 mb-4">利用AI辅助工具对含有Bug的代码项目进行缺陷定位、调试分析及修复。考核核心在于选手如何高效运用AI工具辅助完成Debug全流程。</p>
+              <p className="text-sm leading-relaxed text-gray-500 mb-4">利用AI辅助工具对含有Bug的代码项目进行缺陷定位、调试分析及修复。考核核心在于选手如何高效运用AI工具辅助完成Debug全流程及性能调优分析。</p>
               <div className="flex flex-wrap gap-2">
                 {['VSCode插件', 'CLI工具', '代码审查', '缺陷定位'].map((tag) => (
                   <span key={tag} className="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600">{tag}</span>
@@ -177,7 +186,7 @@ export default function Home() {
               </div>
               <h3 className="text-xl font-bold text-gray-900 mb-1">赛项二：CLI部署开发赛项</h3>
               <p className="text-sm font-medium text-blue-600 mb-3">PRO-CLI</p>
-              <p className="text-sm leading-relaxed text-gray-500 mb-4">使用AI命令行代码助手，全程在终端环境下完成CLI工具部署与应用项目开发。考核终端操作熟练度与AI CLI工具驾驭能力。</p>
+              <p className="text-sm leading-relaxed text-gray-500 mb-4">使用AI命令行代码助手，全程在终端环境下完成CLI工具部署与应用项目开发。考核终端环境开发能力、操作熟练度与AI CLI工具驾驭能力。</p>
               <div className="flex flex-wrap gap-2">
                 {['仅限CLI', '终端操作', '工具部署', '自动化工作流'].map((tag) => (
                   <span key={tag} className="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600">{tag}</span>

@@ -41,6 +41,11 @@ export const debugLevels: TrackLevel[] = [
       '修复完整性（是否全部修复）',
       '完成效率（用时排名）',
     ],
+    deliverables: [
+      '修复后源代码',
+      'Bug修复说明文档',
+      '测试通过截图',
+    ],
     files: [
       { filename: 'inventory_checker.py', label: '含 Bug 的脚本', type: 'code', language: 'python' },
       { filename: 'test_data.csv', label: '测试数据', type: 'data', language: 'csv' },
@@ -66,6 +71,11 @@ export const debugLevels: TrackLevel[] = [
       '项目修复后的功能完整性（通过官方提供的自动化测试套件验证）',
       '修复方案的合理性与工程规范性',
       '完成效率与AI工具使用策略的优劣',
+    ],
+    deliverables: [
+      '修复后多文件项目',
+      '依赖分析报告',
+      '测试套件通过截图',
     ],
     files: [
       { filename: 'grade_query.py', label: '含 Bug 的脚本', type: 'code', language: 'python' },
@@ -95,6 +105,12 @@ export const debugLevels: TrackLevel[] = [
       '安全漏洞修复完整性',
       '代码质量（可读性、可维护性、工程规范）',
       '现场答辩表现（解题思路清晰度、AI使用策略合理性）',
+    ],
+    deliverables: [
+      '修复后工程源码',
+      '性能优化报告',
+      '安全修复说明',
+      '答辩材料',
     ],
     files: [
       { filename: 'student_mgr.c', label: '含 Bug 的 C 代码', type: 'code', language: 'c' },

@@ -1,15 +1,8 @@
 import Accordion from '../components/Accordion'
 import CodePreview from '../components/CodePreview'
+import DifficultyStars from '../components/DifficultyStars'
 import { debugLevels, debugCodeFiles } from '../data/debugTrack'
 import { vscodePlugins, cliTools } from '../data/tools'
-
-function DifficultyStars({ level }: { level: number }) {
-  return (
-    <span className="text-amber-500 tracking-wider">
-      {'★'.repeat(level)}{'☆'.repeat(5 - level)}
-    </span>
-  )
-}
 
 export default function DebugTrack() {
   return (
@@ -117,6 +110,18 @@ export default function DebugTrack() {
                 </table>
               </div>
 
+              {/* 交付物要求 */}
+              {level.deliverables && level.deliverables.length > 0 && (
+                <>
+                  <p className="font-semibold text-gray-800">交付物要求：</p>
+                  <ul className="list-disc list-inside space-y-1">
+                    {level.deliverables.map((d, i) => (
+                      <li key={i}>{d}</li>
+                    ))}
+                  </ul>
+                </>
+              )}
+
               {/* 评判标准 */}
               <p className="font-semibold text-gray-800">评判标准：</p>
               <ul className="list-disc list-inside space-y-1">
@@ -124,6 +129,14 @@ export default function DebugTrack() {
                   <li key={i}>{s}</li>
                 ))}
               </ul>
+
+              {/* 现场答辩说明（决赛） */}
+              {level.phase === 'final' && (
+                <div className="bg-indigo-50 rounded-lg p-3 border border-indigo-100">
+                  <p className="font-medium text-indigo-900 mb-1">🎤 现场答辩</p>
+                  <p className="text-sm text-indigo-800">约10分钟/人，由技术评审委员会就<strong>解题思路</strong>、<strong>AI工具使用策略</strong>、<strong>代码质量</strong>三个维度进行质询。</p>
+                </div>
+              )}
 
               {/* 代码预览 */}
               <div className="bg-blue-50 rounded-lg p-3">

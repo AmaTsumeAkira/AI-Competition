@@ -61,14 +61,14 @@ export const TRACKS: Track[] = [
         id: 'L1',
         name: 'CLI工具安装与HelloWorld',
         description: '安装CLI工具并完成基础项目初始化',
-        fileCount: '1-2个',
+        fileCount: '2个',
         languages: ['Shell', 'Python', 'Node.js'],
       },
       {
         id: 'L2',
         name: '定制配置与复杂项目',
         description: '深度定制配置，完成中等复杂度CLI项目',
-        fileCount: '5-15个',
+        fileCount: '2个',
         languages: ['Shell', 'Python', 'YAML'],
       },
       {
@@ -293,18 +293,18 @@ export const PRO_CLI_SCORING_RULES: ScoringRule[] = [
 
 export const TOOLS: Tool[] = [
   // VSCode 插件（PRO-DBG 可用，PRO-CLI 禁用）
-  { id: 'vscode-1', name: 'Cline', category: 'VSCode插件', website: 'https://marketplace.visualstudio.com/items?itemName=saoudrizwan.claude-dev', description: 'AI编程辅助插件，支持多模型切换', applicableTrack: 'PRO-DBG' },
-  { id: 'vscode-2', name: 'Roo Code', category: 'VSCode插件', website: 'https://marketplace.visualstudio.com/items?itemName=snippedоля.roo-code', description: 'AI代码生成与调试助手', applicableTrack: 'PRO-DBG' },
-  { id: 'vscode-3', name: 'GitHub Copilot', category: 'VSCode插件', website: 'https://marketplace.visualstudio.com/items?itemName=GitHub.copilot', description: 'AI代码补全与建议', applicableTrack: 'PRO-DBG' },
-  { id: 'vscode-4', name: 'Amazon Q Developer', category: 'VSCode插件', website: 'https://marketplace.visualstudio.com/items?itemName=AmazonWebServices.amazon-q', description: 'AWS AI 开发助手', applicableTrack: 'PRO-DBG' },
-  { id: 'vscode-5', name: 'Codeium', category: 'VSCode插件', website: 'https://marketplace.visualstudio.com/items?itemName=Codeium.codeium', description: '免费AI代码补全插件', applicableTrack: 'PRO-DBG' },
-  { id: 'vscode-6', name: 'Tabnine', category: 'VSCode插件', website: 'https://marketplace.visualstudio.com/items?itemName=TabNine.tabnine-vscode', description: 'AI代码补全与重构', applicableTrack: 'PRO-DBG' },
-  { id: 'vscode-7', name: 'Mintlify Doc Writer', category: 'VSCode插件', website: 'https://marketplace.visualstudio.com/items?itemName=mintlify.document', description: 'AI文档自动生成', applicableTrack: 'PRO-DBG' },
+  { id: 'vscode-1', name: '通义灵码（TONGYILingma）', category: 'VSCode插件', website: 'https://marketplace.visualstudio.com/items?itemName=Alibaba-Cloud.tongyi-lingma', description: '阿里云智能编码助手', applicableTrack: 'PRO-DBG' },
+  { id: 'vscode-2', name: '智谱 CodeGeeX', category: 'VSCode插件', website: 'https://marketplace.visualstudio.com/items?itemName=aminer.codegeex', description: '智谱AI代码生成与辅助工具', applicableTrack: 'PRO-DBG' },
+  { id: 'vscode-3', name: '腾讯云 CodeBuddy', category: 'VSCode插件', website: 'https://marketplace.visualstudio.com/items?itemName=TencentCloud.tencent-cloud-codebuddy', description: '腾讯云AI编程伙伴', applicableTrack: 'PRO-DBG' },
+  { id: 'vscode-4', name: '文心快码 BaiduComate', category: 'VSCode插件', website: 'https://marketplace.visualstudio.com/items?itemName=Baidu.comate', description: '百度AI代码助手', applicableTrack: 'PRO-DBG' },
+  { id: 'vscode-5', name: 'KiloCode', category: 'VSCode插件', website: 'https://marketplace.visualstudio.com/items?itemName=kilocode.Kilo-Code', description: '开源AI编码插件', applicableTrack: 'PRO-DBG' },
+  { id: 'vscode-6', name: 'Cline', category: 'VSCode插件', website: 'https://marketplace.visualstudio.com/items?itemName=saoudrizwan.claude-dev', description: '自主AI编码代理', applicableTrack: 'PRO-DBG' },
+  { id: 'vscode-7', name: 'RooCode', category: 'VSCode插件', website: 'https://marketplace.visualstudio.com/items?itemName=RooVeterinaryInc.roo-cline', description: 'AI编码助手', applicableTrack: 'PRO-DBG' },
   // CLI 工具（两个赛项都可用）
-  { id: 'cli-1', name: 'OpenAI CLI (ollama)', category: 'CLI工具', website: 'https://ollama.com', description: '本地大模型运行工具（Ollama）', applicableTrack: 'COMMON', verificationCommand: 'ollama list' },
-  { id: 'cli-2', name: 'Aider', category: 'CLI工具', website: 'https://aider.chat', description: '终端AI编程助手', applicableTrack: 'COMMON', verificationCommand: 'aider --version' },
-  { id: 'cli-3', name: 'CodeShell', category: 'CLI工具', website: 'https://codeshell.com', description: '命令行代码分析工具', applicableTrack: 'COMMON', verificationCommand: 'codeshell --version' },
-  { id: 'cli-4', name: 'GitHub CLI (gh)', category: 'CLI工具', website: 'https://cli.github.com', description: 'GitHub官方命令行工具', applicableTrack: 'COMMON', verificationCommand: 'gh --version' },
+  { id: 'cli-1', name: '通义灵码 CLI', category: 'CLI工具', website: 'https://tongyi.aliyun.com/lingma', description: '阿里云终端AI编码助手', applicableTrack: 'COMMON', verificationCommand: 'lingma --version' },
+  { id: 'cli-2', name: 'CodeGeeX CLI', category: 'CLI工具', website: 'https://codegeex.cn', description: '智谱终端AI编码助手', applicableTrack: 'COMMON', verificationCommand: 'codegeex --version' },
+  { id: 'cli-3', name: 'Claude Code', category: 'CLI工具', website: 'https://docs.anthropic.com/en/docs/claude-code', description: 'Anthropic终端AI编码助手', applicableTrack: 'COMMON', verificationCommand: 'claude --version' },
+  { id: 'cli-4', name: 'CodeLlama CLI', category: 'CLI工具', website: 'https://ollama.com/library/codellama', description: 'Meta终端AI编码助手', applicableTrack: 'COMMON', verificationCommand: 'codellama --version' },
 ]
 
 export const TOOL_WHITELISTS: Record<TrackId, ToolWhitelist> = {
