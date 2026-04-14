@@ -36,6 +36,9 @@ jobs:
 
       - name: 构建网站
         working-directory: web
+        env:
+          VITE_MINIMAX_API_KEY: ${{ secrets.VITE_MINIMAX_API_KEY }}
+          VITE_MINIMAX_MODEL: MiniMax-M2.7
         run: npm run build
 
       - name: 上传 Pages 构建产物
