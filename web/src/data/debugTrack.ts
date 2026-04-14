@@ -29,12 +29,13 @@ export const debugLevels: TrackLevel[] = [
     difficulty: 2,
     score: 20,
     phase: 'prelim',
-    description: '组委会提供包含 3–5 个独立代码文件（语言涵盖 Python/JavaScript/Java/C 中的 2–3 种），每个文件为单一功能模块，含有若干已知 Bug。',
+    description: '组委会提供一个含 9 处 Bug 的 Python 库存管理脚本，Bug 类型涵盖类型转换、逻辑反转、拼写错误、精度丢失、排序错误、键名不一致、除零异常、累加赋值混淆、max/min用反等。选手需借助 AI 工具逐一定位并修复。',
     criteria: [
-      { id: 'D1-01', name: '语法错误识别', detail: '拼写错误、缺少分号/括号、缩进错误、类型声明不匹配等' },
-      { id: 'D1-02', name: '基础逻辑修复', detail: '循环边界条件错误（off-by-one）、条件判断逻辑反转、变量误用等' },
-      { id: 'D1-03', name: '运行时异常处理', detail: '空指针/未定义引用、数组越界、除零错误等常见运行时异常' },
-      { id: 'D1-04', name: 'AI工具基本运用', detail: '能否正确使用AI工具进行代码解释、错误定位与修复建议获取' },
+      { id: 'D1-01', name: '语法与拼写错误', detail: '变量名拼写错误、字典键名不一致等' },
+      { id: 'D1-02', name: '类型与转换错误', detail: '字符串未转为数值、整除导致精度丢失、累加写成赋值等' },
+      { id: 'D1-03', name: '逻辑错误修复', detail: '比较运算符反转、排序方向错误、max/min用反等' },
+      { id: 'D1-04', name: '运行时异常处理', detail: '除零异常、空数据边界情况等' },
+      { id: 'D1-05', name: 'AI工具运用', detail: '能否正确使用AI工具进行错误定位、修复建议获取与验证' },
     ],
     standards: [
       '修复正确性（Bug是否消除且不引入新Bug）',
@@ -51,7 +52,7 @@ export const debugLevels: TrackLevel[] = [
       { filename: 'test_data.csv', label: '测试数据', type: 'data', language: 'csv' },
       { filename: 'test_runner.py', label: '测试用例', type: 'test', language: 'python' },
     ],
-    hint: '注意变量名拼写和空数据处理',
+    hint: '共 9 处 Bug，注意类型转换、比较运算符、变量拼写、累加vs赋值和边界情况',
   },
   {
     id: 'L2',

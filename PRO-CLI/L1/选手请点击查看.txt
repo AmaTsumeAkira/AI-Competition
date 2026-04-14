@@ -1,0 +1,68 @@
+# CLI部署 Level 1：Python 网页数据采集与分析
+
+## 任务说明
+
+编写一个 Python 脚本，从指定网页抓取数据并保存为 CSV 文件，同时实现数据统计与筛选功能。
+
+**考核目标：** 使用 AI 命令行工具（如 Claude Code、Codex CLI）完成编码任务。
+
+## 安装依赖
+
+```bash
+# Windows PowerShell
+pip install -i https://pypi.tuna.tsinghua.edu.cn/simple/ requests beautifulsoup4 pandas
+
+# Mac/Linux
+pip install -i https://pypi.tuna.tsinghua.edu.cn/simple/ requests beautifulsoup4 pandas
+```
+
+## 任务要求
+
+### 基础任务（10分）
+1. 实现 `print_system_info()` —— 打印 Python 版本、操作系统、工作目录、库版本等环境信息
+2. 从 `https://quotes.toscrape.com/` 抓取名言数据
+3. 提取：名言内容（text）、作者（author）、标签列表（tags）
+4. 实现翻页抓取，至少抓取 3 页数据（≥30 条）
+5. 保存为 `quotes.csv`，UTF-8 编码，含表头
+
+### 统计分析任务（4分）
+6. 实现 `get_top_authors(quotes, n)` 函数：统计引用次数最多的前 n 位作者
+7. 实现 `filter_by_tag(quotes, tag)` 函数：筛选包含指定标签的名言
+
+### 进阶任务（6分）
+8. 支持命令行参数：`--output` 指定输出文件名，`--tag` 指定标签过滤
+9. 运行脚本后在终端打印统计摘要（总条数、作者数、Top 3 作者）
+
+## 文件清单
+
+| 文件 | 说明 |
+|------|------|
+| `README.md` | 本文件 |
+| `scraper.py` | 起始模板（含 TODO 标记，共 5 处需补充） |
+| `quotes.csv` | 抓取结果（选手生成） |
+| `test_runner.py` | 测试脚本（9 项测试，选手勿改） |
+
+## 评分标准
+
+| 项目 | 分值 | 标准 |
+|------|------|------|
+| 系统状态信息 | 2 分 | print_system_info 正确输出环境信息 |
+| 数据完整性 | 5 分 | 抓取 ≥3 页，text/author/tags 字段齐全 |
+| 文件格式 | 3 分 | CSV 格式正确，UTF-8 编码，含表头 |
+| 统计函数 | 4 分 | get_top_authors 和 filter_by_tag 实现正确 |
+| 命令行参数与摘要 | 4 分 | --output/--tag 参数可用，统计信息输出 |
+| 代码质量 | 2 分 | 有注释，异常处理完善 |
+| **满分** | **20 分** | |
+
+## 限时：30 分钟
+
+## 提交物
+1. `scraper.py` 源代码
+2. `quotes.csv` 数据文件
+3. 终端操作录屏（展示 AI 工具使用过程）
+
+## 提示
+- 网站 `quotes.toscrape.com` 是专门用于练习爬虫的网站
+- 不需要登录，不需要反爬处理
+- 注意翻页机制（URL 中的 page 参数）
+- `scraper.py` 模板中有 5 处 `TODO`，第一个是系统信息打印，逐一完成即可

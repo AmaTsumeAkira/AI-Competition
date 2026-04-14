@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { CURRENT_PHASE, isPhaseVisible, COMPETITION_NAME } from '../config'
 
 function SectionHeading({ title, subtitle }: { title: string; subtitle?: string }) {
   return (
@@ -27,7 +28,7 @@ export default function Home() {
             </span>
           </div>
           <h1 className="text-center text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl">
-            AI素养大赛
+            {COMPETITION_NAME}
             <span className="block text-blue-300 text-3xl sm:text-4xl lg:text-5xl mt-2">· 专业赛道</span>
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-center text-lg text-blue-200/80">
@@ -88,13 +89,18 @@ export default function Home() {
       {/* 赛程时间轴 */}
       <section className="bg-gray-50 py-20">
         <div className="mx-auto max-w-3xl px-6">
-          <SectionHeading title="赛程时间轴" subtitle="初赛 → 复赛 → 决赛，三级赛制，难度阶梯式上升" />
+          <SectionHeading title="赛程时间轴" subtitle={
+            CURRENT_PHASE === 'final' ? '初赛 → 复赛 → 决赛，三级赛制，难度阶梯式上升' :
+            CURRENT_PHASE === 'semi' ? '初赛 → 复赛，难度阶梯式上升' :
+            '初赛阶段'
+          } />
           <div className="relative">
             <div className="absolute left-[18px] top-2 bottom-2 w-0.5 bg-gradient-to-b from-blue-600 to-blue-300" />
             <div className="space-y-8">
-              {[
+              {([
                 {
-                  phase: '初赛',
+                  phase: '初赛' as const,
+                  phaseKey: 'prelim' as const,
                   label: 'Preliminaries',
                   color: 'bg-blue-600',
                   items: [
@@ -105,7 +111,8 @@ export default function Home() {
                   ],
                 },
                 {
-                  phase: '复赛',
+                  phase: '复赛' as const,
+                  phaseKey: 'semi' as const,
                   label: 'Semi-finals',
                   color: 'bg-blue-500',
                   items: [
@@ -116,7 +123,8 @@ export default function Home() {
                   ],
                 },
                 {
-                  phase: '决赛',
+                  phase: '决赛' as const,
+                  phaseKey: 'final' as const,
                   label: 'Finals',
                   color: 'bg-indigo-600',
                   items: [
@@ -127,7 +135,7 @@ export default function Home() {
                     { k: '答辩', v: '约10分钟/人，由技术评审委员会质询' },
                   ],
                 },
-              ].map((stage, i) => (
+              ]).filter(stage => isPhaseVisible(stage.phaseKey)).map((stage, i) => (
                 <div key={stage.phase} className="relative flex gap-6">
                   <div className={`relative z-10 flex h-9 w-9 shrink-0 items-center justify-center rounded-full ${stage.color} text-sm font-bold text-white shadow-md`}>
                     {i + 1}

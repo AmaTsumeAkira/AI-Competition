@@ -199,6 +199,7 @@ def test_file_operations(exe_path):
 
 if __name__ == '__main__':
     print("=" * 50)
+    print("第三届AIGC数字素养大赛 - PRO-DBG L3")
     print("学生管理系统 (C语言) - 自动测试")
     print("=" * 50)
     print()

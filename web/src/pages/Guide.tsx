@@ -51,9 +51,9 @@ export default function Guide() {
     },
     {
       number: 2,
-      title: '下载代码',
-      description: '从 GitHub 仓库克隆赛题代码到本地。仓库包含两个赛道的所有赛题文件。',
-      command: 'git clone https://github.com/AmaTsumeAkira/AI-Competition.git\ncd AI-Competition',
+      title: '下载赛题代码',
+      description: '进入对应赛项页面（AI纠错赛项 或 CLI部署赛项），在每个关卡中点击"下载"按钮获取该关卡的赛题压缩包，解压后即可使用。',
+      tip: '每个关卡的赛题代码是独立的压缩包，下载后解压即可开始',
     },
     {
       number: 3,
@@ -97,7 +97,7 @@ export default function Guide() {
 
   return (
     <div className="min-h-screen bg-gray-50 pt-20 pb-16">
-      <div className="max-w-3xl mx-auto px-4">
+      <div className="max-w-4xl mx-auto px-6">
         <div className="mb-10">
           <p className="text-sm font-semibold text-blue-600 uppercase tracking-wider mb-2">Guide</p>
           <h1 className="text-3xl font-bold text-blue-900 mb-3">操作指引</h1>

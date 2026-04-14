@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { COMPETITION_NAME } from '../config'
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false)
@@ -11,6 +12,7 @@ export default function Header() {
     { href: '/guide', label: '操作指引' },
     { href: '/environment', label: '环境搭建' },
     { href: '/bonus', label: '极客加分' },
+    { href: '/score', label: '在线评分' },
     { href: '/about', label: '关于' },
   ]
 
@@ -25,7 +27,7 @@ export default function Header() {
               <path d="M2 12l10 5 10-5" />
             </svg>
           </div>
-          <span className="text-base font-bold tracking-tight text-blue-900">AI素养大赛<span className="text-blue-500">·专业赛道</span></span>
+          <span className="text-base font-bold tracking-tight text-blue-900">{COMPETITION_NAME}<span className="text-blue-500">·专业赛道</span></span>
         </a>
 
         <nav className="hidden lg:flex items-center gap-1 text-sm">

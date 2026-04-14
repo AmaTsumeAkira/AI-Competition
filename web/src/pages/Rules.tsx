@@ -1,7 +1,12 @@
+import { CURRENT_PHASE, isStageVisible, COMPETITION_NAME } from '../config'
+
 export default function Rules() {
+  const showSemi = isStageVisible('semifinal')
+  const showFinal = isStageVisible('final')
+
   return (
     <div className="min-h-screen bg-gray-50 pt-20 pb-16">
-      <div className="max-w-4xl mx-auto px-4">
+      <div className="max-w-4xl mx-auto px-6">
         {/* Page Header */}
         <div className="mb-10">
           <p className="text-sm font-semibold text-blue-600 uppercase tracking-wider mb-2">Scoring</p>
@@ -23,7 +28,7 @@ export default function Rules() {
                 <li>• 代码质量</li>
                 <li>• AI工具运用</li>
                 <li>• 完成效率</li>
-                <li>• 答辩表现（决赛）</li>
+                {showFinal && <li>• 答辩表现（决赛）</li>}
               </ul>
             </div>
             <div className="bg-indigo-50 rounded-lg p-4 border border-indigo-100">
@@ -40,32 +45,32 @@ export default function Rules() {
         {/* AI纠错赛项基础分构成 */}
         <section className="bg-white rounded-xl border border-gray-200 p-8 mb-6">
           <h2 className="text-xl font-bold text-gray-900 mb-2">AI纠错赛项基础分构成</h2>
-          <p className="text-sm text-gray-500 mb-4">各维度权重随阶段递进调整，决赛增设答辩环节</p>
+          <p className="text-sm text-gray-500 mb-4">{showFinal ? '各维度权重随阶段递进调整，决赛增设答辩环节' : '各维度权重随阶段递进调整'}</p>
           <div className="overflow-x-auto">
             <table className="w-full text-sm border-collapse">
               <thead>
                 <tr className="bg-blue-50">
                   <th className="text-left py-2.5 px-3 font-semibold text-gray-700 border border-gray-200">评分维度</th>
                   <th className="text-center py-2.5 px-3 font-semibold text-gray-700 border border-gray-200">初赛</th>
-                  <th className="text-center py-2.5 px-3 font-semibold text-gray-700 border border-gray-200">复赛</th>
-                  <th className="text-center py-2.5 px-3 font-semibold text-gray-700 border border-gray-200">决赛</th>
+                  {showSemi && <th className="text-center py-2.5 px-3 font-semibold text-gray-700 border border-gray-200">复赛</th>}
+                  {showFinal && <th className="text-center py-2.5 px-3 font-semibold text-gray-700 border border-gray-200">决赛</th>}
                   <th className="text-left py-2.5 px-3 font-semibold text-gray-700 border border-gray-200">评分说明</th>
                 </tr>
               </thead>
               <tbody>
-                {[
+                {([
                   ['功能正确性', '50%', '40%', '30%', 'Bug修复正确率，以自动化测试通过率为核心指标'],
                   ['修复完整性', '20%', '20%', '15%', '全部Bug的发现率与修复覆盖率'],
                   ['代码质量', '10%', '15%', '20%', '修复方案的工程规范性、可读性、无副作用引入'],
                   ['AI工具运用', '10%', '15%', '15%', 'AI工具使用的策略性、Prompt质量、工具链组合能力'],
                   ['完成效率', '10%', '10%', '5%', '同等正确率下，用时更短者得分更高'],
                   ['现场答辩', '—', '—', '15%', '解题思路、技术决策合理性、表达清晰度'],
-                ].map(([dim, pre, semi, final, desc], i) => (
+                ] as string[][]).filter(([dim]) => dim !== '现场答辩' || showFinal).map(([dim, pre, semi, final, desc], i) => (
                   <tr key={dim} className={i % 2 === 1 ? 'bg-gray-50' : ''}>
                     <td className="py-2.5 px-3 border border-gray-200 font-medium">{dim}</td>
                     <td className="py-2.5 px-3 border border-gray-200 text-center text-gray-600">{pre}</td>
-                    <td className="py-2.5 px-3 border border-gray-200 text-center text-gray-600">{semi}</td>
-                    <td className="py-2.5 px-3 border border-gray-200 text-center text-gray-600">{final}</td>
+                    {showSemi && <td className="py-2.5 px-3 border border-gray-200 text-center text-gray-600">{semi}</td>}
+                    {showFinal && <td className="py-2.5 px-3 border border-gray-200 text-center text-gray-600">{final}</td>}
                     <td className="py-2.5 px-3 border border-gray-200 text-gray-500 text-xs">{desc}</td>
                   </tr>
                 ))}
@@ -77,20 +82,20 @@ export default function Rules() {
         {/* CLI部署开发赛项基础分构成 */}
         <section className="bg-white rounded-xl border border-gray-200 p-8 mb-6">
           <h2 className="text-xl font-bold text-gray-900 mb-2">CLI部署开发赛项基础分构成</h2>
-          <p className="text-sm text-gray-500 mb-4">侧重部署成功性与工程化规范，决赛增设自动化与答辩维度</p>
+          <p className="text-sm text-gray-500 mb-4">{showFinal ? '侧重部署成功性与工程化规范，决赛增设自动化与答辩维度' : '侧重部署成功性与工程化规范'}</p>
           <div className="overflow-x-auto">
             <table className="w-full text-sm border-collapse">
               <thead>
                 <tr className="bg-blue-50">
                   <th className="text-left py-2.5 px-3 font-semibold text-gray-700 border border-gray-200">评分维度</th>
                   <th className="text-center py-2.5 px-3 font-semibold text-gray-700 border border-gray-200">初赛</th>
-                  <th className="text-center py-2.5 px-3 font-semibold text-gray-700 border border-gray-200">复赛</th>
-                  <th className="text-center py-2.5 px-3 font-semibold text-gray-700 border border-gray-200">决赛</th>
+                  {showSemi && <th className="text-center py-2.5 px-3 font-semibold text-gray-700 border border-gray-200">复赛</th>}
+                  {showFinal && <th className="text-center py-2.5 px-3 font-semibold text-gray-700 border border-gray-200">决赛</th>}
                   <th className="text-left py-2.5 px-3 font-semibold text-gray-700 border border-gray-200">评分说明</th>
                 </tr>
               </thead>
               <tbody>
-                {[
+                {([
                   ['部署成功性', '40%', '20%', '10%', 'CLI工具是否正确安装、配置并可正常运行'],
                   ['项目功能完整性', '25%', '30%', '30%', '应用项目的功能覆盖度与业务逻辑正确性'],
                   ['工程化规范', '10%', '15%', '20%', '代码结构、文档完整性、版本管理、可复现性'],
@@ -98,12 +103,18 @@ export default function Rules() {
                   ['完成效率', '10%', '5%', '5%', '同等质量下，用时更短者得分更高'],
                   ['自动化与闭环', '—', '10%', '5%', '自动化脚本质量与业务闭环程度'],
                   ['现场答辩', '—', '—', '15%', '工作流演示、技术架构阐述、Q&A表现'],
-                ].map(([dim, pre, semi, final, desc], i) => (
+                ] as string[][])
+                  .filter(([dim]) => {
+                    if (dim === '现场答辩') return showFinal
+                    if (dim === '自动化与闭环') return showSemi || showFinal
+                    return true
+                  })
+                  .map(([dim, pre, semi, final, desc], i) => (
                   <tr key={dim} className={i % 2 === 1 ? 'bg-gray-50' : ''}>
                     <td className="py-2.5 px-3 border border-gray-200 font-medium">{dim}</td>
                     <td className="py-2.5 px-3 border border-gray-200 text-center text-gray-600">{pre}</td>
-                    <td className="py-2.5 px-3 border border-gray-200 text-center text-gray-600">{semi}</td>
-                    <td className="py-2.5 px-3 border border-gray-200 text-center text-gray-600">{final}</td>
+                    {showSemi && <td className="py-2.5 px-3 border border-gray-200 text-center text-gray-600">{semi}</td>}
+                    {showFinal && <td className="py-2.5 px-3 border border-gray-200 text-center text-gray-600">{final}</td>}
                     <td className="py-2.5 px-3 border border-gray-200 text-gray-500 text-xs">{desc}</td>
                   </tr>
                 ))}
@@ -115,7 +126,7 @@ export default function Rules() {
         {/* 极客加分机制 */}
         <section className="mb-6">
           <h2 className="text-xl font-bold text-gray-900 mb-4">极客加分机制（统一加分项）</h2>
-          <p className="text-gray-600 text-sm mb-6">适用于<strong>两个赛项的所有阶段（初赛/复赛/决赛）</strong>。三个加分项<strong>可独立叠加</strong>：基础分100分 + 极客加分上限30分（API +10 + Ollama +12 + OpenClaw +8）= <strong>理论最高130分</strong>。</p>
+          <p className="text-gray-600 text-sm mb-6">适用于<strong>两个赛项{showFinal ? '的所有阶段（初赛/复赛/决赛）' : showSemi ? '的初赛和复赛阶段' : '的初赛阶段'}</strong>。三个加分项<strong>可独立叠加</strong>：基础分100分 + 极客加分上限30分（API +10 + Ollama +12 + OpenClaw +8）= <strong>理论最高130分</strong>。</p>
 
           <div className="space-y-6">
             {/* 加分项一 */}

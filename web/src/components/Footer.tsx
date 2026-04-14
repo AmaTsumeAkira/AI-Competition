@@ -1,3 +1,5 @@
+import { COMPETITION_NAME } from '../config'
+
 export default function Footer() {
   return (
     <footer className="border-t border-gray-200 bg-white">
@@ -11,10 +13,10 @@ export default function Footer() {
                 <path d="M2 12l10 5 10-5" />
               </svg>
             </div>
-            <span className="text-sm font-medium text-gray-500">AI素养大赛 · 专业赛道</span>
+            <span className="text-sm font-medium text-gray-500">{COMPETITION_NAME} · 专业赛道</span>
           </div>
           <div className="flex flex-col items-center gap-1 sm:items-end">
-            <p className="text-sm text-gray-400">© 2026 AI素养大赛组委会. 保留所有权利。</p>
+            <p className="text-sm text-gray-400">© 2026 {COMPETITION_NAME}组委会. 保留所有权利。</p>
             <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer" className="text-xs text-gray-400 hover:text-gray-600 transition-colors">
               陕ICP备20011108号-2
             </a>

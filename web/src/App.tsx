@@ -11,6 +11,7 @@ const Bonus = lazy(() => import('./pages/Bonus'))
 const Guide = lazy(() => import('./pages/Guide'))
 const Environment = lazy(() => import('./pages/Environment'))
 const About = lazy(() => import('./pages/About'))
+const ScoringTool = lazy(() => import('./pages/ScoringTool'))
 
 function Loading() {
   return (
@@ -34,6 +35,7 @@ export default function App() {
           <Route path="/guide" element={<Guide />} />
           <Route path="/environment" element={<Environment />} />
           <Route path="/about" element={<About />} />
+          <Route path="/score" element={<ScoringTool />} />
         </Routes>
       </Suspense>
       <Footer />

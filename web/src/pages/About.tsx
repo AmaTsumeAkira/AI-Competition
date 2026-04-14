@@ -1,12 +1,16 @@
+import { CURRENT_PHASE, COMPETITION_NAME } from '../config'
+
 export default function About() {
+  const phaseText = CURRENT_PHASE === 'final' ? '初赛 → 复赛 → 决赛' : CURRENT_PHASE === 'semi' ? '初赛 → 复赛' : '初赛'
+
   return (
     <div className="min-h-screen bg-gray-50 pt-20 pb-16">
-      <div className="max-w-4xl mx-auto px-4">
+      <div className="max-w-4xl mx-auto px-6">
         {/* Page Header */}
         <div className="mb-10">
           <p className="text-sm font-semibold text-blue-600 uppercase tracking-wider mb-2">About</p>
           <h1 className="text-3xl font-bold text-blue-900 mb-3">关于大赛</h1>
-          <p className="text-gray-500">AI素养大赛·专业赛道 — 赛事背景与组织信息</p>
+          <p className="text-gray-500">{COMPETITION_NAME}·专业赛道 — 赛事背景与组织信息</p>
         </div>
 
         {/* 大赛背景 */}
@@ -19,7 +23,7 @@ export default function About() {
             在人工智能技术深刻重塑软件工程范式的时代浪潮中，AI辅助编程能力已从"加分技能"跃升为"核心素养"。掌握与AI协作的能力——精准地向AI提出指令、批判性地审查AI输出、高效地将AI工具融入开发工作流——正成为定义下一代技术人才的关键标尺。
           </p>
           <p className="text-gray-700 leading-relaxed mt-3">
-            <strong className="text-gray-900">AI素养大赛</strong>应运而生，旨在构建一个高规格、强实战的竞技平台，全面检验并提升参赛者在真实工程场景下运用AI工具解决复杂技术问题的综合能力。
+            <strong className="text-gray-900">{COMPETITION_NAME}</strong>应运而生，旨在构建一个高规格、强实战的竞技平台，全面检验并提升参赛者在真实工程场景下运用AI工具解决复杂技术问题的综合能力。
           </p>
         </section>
 
@@ -54,7 +58,7 @@ export default function About() {
             专业赛道简介
           </h2>
           <p className="text-gray-700 leading-relaxed mb-4">
-            专业赛道面向具备一定编程基础的选手，下设两个子赛项，均采用<strong className="text-gray-900">初赛 → 复赛 → 决赛</strong>三级赛制，难度呈阶梯式上升。
+            专业赛道面向具备一定编程基础的选手，下设两个子赛项，当前处于<strong className="text-gray-900">{phaseText}</strong>阶段。
           </p>
           <div className="overflow-x-auto">
             <table className="w-full text-sm border-collapse">
@@ -99,19 +103,9 @@ export default function About() {
             组织信息
           </h2>
           <div className="space-y-2 text-sm text-gray-600">
-            <p><strong className="text-gray-900">赛事名称：</strong>AI素养大赛·专业赛道</p>
+            <p><strong className="text-gray-900">赛事名称：</strong>{COMPETITION_NAME}·专业赛道</p>
             <p><strong className="text-gray-900">赛事性质：</strong>面向具备一定编程基础选手的专业级AI编程素养竞赛</p>
-            <p><strong className="text-gray-900">GitHub 仓库：</strong>
-              <a
-                href="https://github.com/AmaTsumeAkira/AI-Competition"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="ml-1 text-blue-600 underline hover:text-blue-800"
-              >
-                AmaTsumeAkira/AI-Competition
-              </a>
-            </p>
-            <p className="text-gray-500 mt-3 text-xs">本秩序册为AI素养大赛专业赛道的权威性竞赛规则文件，一经发布，对组委会、裁判组、全体参赛选手及相关工作人员均具有约束力。组委会保留最终解释权。</p>
+            <p className="text-gray-500 mt-3 text-xs">本秩序册为{COMPETITION_NAME}专业赛道的权威性竞赛规则文件，一经发布，对组委会、裁判组、全体参赛选手及相关工作人员均具有约束力。组委会保留最终解释权。</p>
           </div>
         </section>
       </div>

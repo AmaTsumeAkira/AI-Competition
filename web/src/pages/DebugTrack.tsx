@@ -3,11 +3,14 @@ import CodePreview from '../components/CodePreview'
 import DifficultyStars from '../components/DifficultyStars'
 import { debugLevels, debugCodeFiles } from '../data/debugTrack'
 import { vscodePlugins, cliTools } from '../data/tools'
+import { isPhaseVisible, CURRENT_PHASE } from '../config'
 
 export default function DebugTrack() {
+  const visibleLevels = debugLevels.filter(l => isPhaseVisible(l.phase))
+
   return (
     <div className="min-h-screen bg-gray-50 pt-20 pb-16">
-      <div className="max-w-4xl mx-auto px-4">
+      <div className="max-w-4xl mx-auto px-6">
         <h1 className="text-3xl font-bold text-blue-900 mb-2">AI纠错赛项（PRO-DBG）</h1>
         <p className="text-gray-600 mb-8">使用 AI 工具修复含有 Bug 的代码项目</p>
 
@@ -18,7 +21,11 @@ export default function DebugTrack() {
               选手需利用组委会指定的AI辅助工具，对官方给出的<strong>含有Bug的代码项目</strong>进行缺陷定位、调试分析及修复。
               考核的核心不仅是"能否修好Bug"，更在于选手<strong>如何高效运用AI工具辅助完成Debug全流程</strong>。
             </p>
-            <p className="text-blue-600 font-medium">赛事采用初赛 → 复赛 → 决赛三级赛制，难度呈阶梯式上升。</p>
+            <p className="text-blue-600 font-medium">
+              {CURRENT_PHASE === 'final' ? '赛事采用初赛 → 复赛 → 决赛三级赛制，难度呈阶梯式上升。' :
+               CURRENT_PHASE === 'semi' ? '当前为初赛和复赛阶段。' :
+               '当前为初赛阶段。'}
+            </p>
           </div>
         </Accordion>
 
@@ -76,7 +83,7 @@ export default function DebugTrack() {
         </Accordion>
 
         {/* 各Level */}
-        {debugLevels.map((level) => (
+        {visibleLevels.map((level) => (
           <Accordion key={level.id} title={`${level.title} ${'★'.repeat(level.difficulty)}${'☆'.repeat(5 - level.difficulty)}（${level.score}分）`}>
             <div className="space-y-4 text-sm text-gray-700">
               {/* 难度 */}
@@ -144,6 +151,22 @@ export default function DebugTrack() {
                 {debugCodeFiles[level.id]?.map((file) => (
                   <CodePreview key={file.filename} file={file} />
                 ))}
+              </div>
+
+              {/* 下载赛题 */}
+              <div className="bg-green-50 rounded-lg p-4 border border-green-200 flex items-center justify-between">
+                <div>
+                  <p className="font-medium text-green-900">📦 下载本关赛题代码</p>
+                  <p className="text-sm text-green-700 mt-1">PRO-DBG-{level.id}.zip</p>
+                </div>
+                <a
+                  href={`./PRO-DBG-${level.id}.zip`}
+                  download
+                  className="inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white font-semibold px-5 py-2.5 rounded-lg transition-colors text-sm"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
+                  下载
+                </a>
               </div>
 
               {/* 提示 */}

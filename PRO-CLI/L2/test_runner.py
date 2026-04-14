@@ -44,6 +44,7 @@ def test_contains_distribution():
 
 # 运行测试
 print("=" * 40)
+print("第三届AIGC数字素养大赛 - PRO-CLI L2")
 print("CLI L2 测试套件")
 print("=" * 40)
 

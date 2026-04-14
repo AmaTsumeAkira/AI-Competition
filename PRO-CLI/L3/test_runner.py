@@ -141,6 +141,7 @@ def test_deploy_script():
 
 if __name__ == '__main__':
     print("=" * 50)
+    print("第三届AIGC数字素养大赛 - PRO-CLI L3")
     print("Flask 应用 - 自动测试")
     print("=" * 50)
     print()
