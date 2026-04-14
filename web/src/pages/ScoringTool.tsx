@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useCallback } from 'react'
 import { COMPETITION_NAME } from '../config'
 import { debugLevels, debugCodeFiles } from '../data/debugTrack'
 import { cliLevels, cliCodeFiles } from '../data/cliTrack'
@@ -217,6 +217,213 @@ async function callMiniMaxAPI(
   return JSON.parse(jsonMatch[0]) as ScoringResult
 }
 
+/* ── Canvas 绘制评分图片 ── */
+
+function wrapText(ctx: CanvasRenderingContext2D, text: string, maxWidth: number): string[] {
+  const lines: string[] = []
+  let line = ''
+  for (const ch of text) {
+    const test = line + ch
+    if (ctx.measureText(test).width > maxWidth && line) {
+      lines.push(line)
+      line = ch
+    } else {
+      line = test
+    }
+  }
+  if (line) lines.push(line)
+  return lines
+}
+
+function renderResultToImage(
+  result: ScoringResult,
+  track: TrackOption,
+  levelId: string,
+  studentName: string,
+  studentId: string,
+): string {
+  const W = 700
+  const PAD = 32
+  const contentW = W - PAD * 2
+
+  // 预计算高度
+  const headerH = 90
+  const titleH = 48
+  let detailH = titleH
+  const tempCanvas = document.createElement('canvas')
+  const tempCtx = tempCanvas.getContext('2d')!
+  tempCtx.font = '13px system-ui, sans-serif'
+  for (const s of result.scores) {
+    const commentLines = wrapText(tempCtx, s.comment, contentW - 100)
+    detailH += 24 + commentLines.length * 18 + 16
+  }
+  tempCtx.font = '14px system-ui, sans-serif'
+  const summaryLines = wrapText(tempCtx, result.summary, contentW - 16)
+  const summaryH = 40 + summaryLines.length * 20 + 16
+  const studentInfoH = (studentName || studentId) ? 36 : 0
+  const watermarkH = 36
+
+  const H = PAD + headerH + studentInfoH + detailH + summaryH + watermarkH + PAD
+
+  const canvas = document.createElement('canvas')
+  const dpr = 2
+  canvas.width = W * dpr
+  canvas.height = H * dpr
+  const ctx = canvas.getContext('2d')!
+  ctx.scale(dpr, dpr)
+
+  // 背景
+  ctx.fillStyle = '#ffffff'
+  ctx.fillRect(0, 0, W, H)
+
+  let y = PAD
+
+  // ── 头部渐变 ──
+  const grad = ctx.createLinearGradient(PAD, y, W - PAD, y)
+  grad.addColorStop(0, '#2563eb')
+  grad.addColorStop(1, '#4f46e5')
+  const rr = 12
+  ctx.beginPath()
+  ctx.moveTo(PAD + rr, y)
+  ctx.lineTo(W - PAD - rr, y)
+  ctx.arcTo(W - PAD, y, W - PAD, y + rr, rr)
+  ctx.lineTo(W - PAD, y + headerH)
+  ctx.lineTo(PAD, y + headerH)
+  ctx.arcTo(PAD, y, PAD + rr, y, rr)
+  ctx.closePath()
+  ctx.fillStyle = grad
+  ctx.fill()
+
+  // 总分文字
+  ctx.fillStyle = 'rgba(255,255,255,0.8)'
+  ctx.font = '13px system-ui, sans-serif'
+  ctx.textAlign = 'left'
+  ctx.fillText('推荐总分', PAD + 20, y + 28)
+  ctx.fillStyle = '#ffffff'
+  ctx.font = 'bold 36px system-ui, sans-serif'
+  ctx.fillText(`${result.totalScore}`, PAD + 20, y + 68)
+  const scoreW = ctx.measureText(`${result.totalScore}`).width
+  ctx.fillStyle = 'rgba(255,255,255,0.6)'
+  ctx.font = '16px system-ui, sans-serif'
+  ctx.fillText(` / ${result.maxTotalScore}`, PAD + 20 + scoreW, y + 68)
+
+  // 右侧赛项
+  ctx.fillStyle = 'rgba(255,255,255,0.8)'
+  ctx.font = '13px system-ui, sans-serif'
+  ctx.textAlign = 'right'
+  ctx.fillText(
+    `${track === 'PRO-DBG' ? 'AI纠错赛项' : 'CLI部署赛项'} · ${levelId}`,
+    W - PAD - 20, y + 52,
+  )
+
+  y += headerH
+
+  // ── 选手信息 ──
+  if (studentName || studentId) {
+    ctx.fillStyle = '#eef2ff'
+    ctx.fillRect(PAD, y, contentW, studentInfoH)
+    ctx.strokeStyle = '#e5e7eb'
+    ctx.lineWidth = 1
+    ctx.strokeRect(PAD, y, contentW, studentInfoH)
+    ctx.fillStyle = '#374151'
+    ctx.font = '13px system-ui, sans-serif'
+    ctx.textAlign = 'left'
+    const infoParts: string[] = []
+    if (studentName) infoParts.push(`姓名：${studentName}`)
+    if (studentId) infoParts.push(`学号：${studentId}`)
+    ctx.fillText(infoParts.join('    '), PAD + 16, y + 22)
+    y += studentInfoH
+  }
+
+  // ── 详细评分 ──
+  ctx.fillStyle = '#f9fafb'
+  ctx.fillRect(PAD, y, contentW, detailH)
+  ctx.strokeStyle = '#e5e7eb'
+  ctx.lineWidth = 1
+  ctx.strokeRect(PAD, y, contentW, detailH)
+
+  ctx.textAlign = 'left'
+  ctx.fillStyle = '#1f2937'
+  ctx.font = 'bold 15px system-ui, sans-serif'
+  y += 28
+  ctx.fillText('详细评分', PAD + 16, y)
+  y += 24
+
+  for (let i = 0; i < result.scores.length; i++) {
+    const s = result.scores[i]
+    // 分数
+    const color = s.score >= s.maxScore * 0.8 ? '#16a34a' : s.score >= s.maxScore * 0.5 ? '#ca8a04' : '#dc2626'
+    ctx.font = 'bold 16px system-ui, sans-serif'
+    ctx.fillStyle = color
+    ctx.textAlign = 'right'
+    ctx.fillText(`${s.score}`, PAD + 80, y)
+    ctx.fillStyle = '#9ca3af'
+    ctx.font = '13px system-ui, sans-serif'
+    ctx.fillText(` / ${s.maxScore}`, PAD + 80 + ctx.measureText(` / ${s.maxScore}`).width + 10, y)
+    ctx.textAlign = 'right'
+    ctx.fillText(`/ ${s.maxScore}`, PAD + 110, y)
+
+    // 项目名
+    ctx.textAlign = 'left'
+    ctx.fillStyle = '#1f2937'
+    ctx.font = '500 14px system-ui, sans-serif'
+    ctx.fillText(s.item, PAD + 120, y)
+    y += 20
+
+    // 评语
+    ctx.font = '13px system-ui, sans-serif'
+    ctx.fillStyle = '#6b7280'
+    const cLines = wrapText(ctx, s.comment, contentW - 120 - 16)
+    for (const ln of cLines) {
+      ctx.fillText(ln, PAD + 120, y)
+      y += 18
+    }
+
+    // 分隔线
+    if (i < result.scores.length - 1) {
+      ctx.strokeStyle = '#f3f4f6'
+      ctx.beginPath()
+      ctx.moveTo(PAD + 16, y + 4)
+      ctx.lineTo(W - PAD - 16, y + 4)
+      ctx.stroke()
+    }
+    y += 12
+  }
+
+  // ── AI 评语 ──
+  const summaryY = y
+  ctx.fillStyle = '#f9fafb'
+  ctx.fillRect(PAD, summaryY, contentW, summaryH)
+  ctx.strokeStyle = '#e5e7eb'
+  ctx.strokeRect(PAD, summaryY, contentW, summaryH)
+
+  y = summaryY + 24
+  ctx.fillStyle = '#4b5563'
+  ctx.font = 'bold 13px system-ui, sans-serif'
+  ctx.textAlign = 'left'
+  ctx.fillText('AI 评语', PAD + 16, y)
+  y += 20
+
+  ctx.fillStyle = '#374151'
+  ctx.font = '14px system-ui, sans-serif'
+  for (const ln of summaryLines) {
+    ctx.fillText(ln, PAD + 16, y)
+    y += 20
+  }
+
+  // ── 水印 ──
+  y += 8
+  ctx.fillStyle = 'rgba(0,0,0,0.15)'
+  ctx.font = '11px system-ui, sans-serif'
+  ctx.textAlign = 'center'
+  ctx.fillText(
+    `${COMPETITION_NAME} · AI 自动评分 · ${new Date().toLocaleString('zh-CN')}`,
+    W / 2, y + 12,
+  )
+
+  return canvas.toDataURL('image/png')
+}
+
 /* ── 组件 ── */
 
 export default function ScoringTool() {
@@ -224,10 +431,13 @@ export default function ScoringTool() {
   const [levelId, setLevelId] = useState('L1')
   const [studentCode, setStudentCode] = useState('')
   const [fileName, setFileName] = useState('')
+  const [studentName, setStudentName] = useState('')
+  const [studentId, setStudentId] = useState('')
   const [loading, setLoading] = useState(false)
   const [streamText, setStreamText] = useState('')
   const [progressStep, setProgressStep] = useState(0)
   const [result, setResult] = useState<ScoringResult | null>(null)
+  const [resultImageUrl, setResultImageUrl] = useState('')
   const [error, setError] = useState('')
   const fileInputRef = useRef<HTMLInputElement>(null)
   const progressTimerRef = useRef<ReturnType<typeof setInterval> | null>(null)
@@ -245,6 +455,13 @@ export default function ScoringTool() {
       if (progressTimerRef.current) clearInterval(progressTimerRef.current)
     }
   }, [])
+
+  // 结果变化时，用 Canvas 绘制评分图片
+  useEffect(() => {
+    if (!result) { setResultImageUrl(''); return }
+    const url = renderResultToImage(result, track, levelId, studentName, studentId)
+    setResultImageUrl(url)
+  }, [result, track, levelId, studentName, studentId])
 
   const visibleLevels = getVisibleLevels(track)
   const selectedLevel = visibleLevels.find((l) => l.id === levelId)
@@ -274,6 +491,7 @@ export default function ScoringTool() {
     setLoading(true)
     setError('')
     setResult(null)
+    setResultImageUrl('')
     setStreamText('')
     setProgressStep(0)
 
@@ -288,7 +506,7 @@ export default function ScoringTool() {
       const prompt = buildPrompt(track, selectedLevel, mainFile.content, studentCode)
       const res = await callMiniMaxAPI(prompt, (text) => {
         setStreamText(text)
-        setProgressStep(3) // 收到流式数据后跳到最后一步
+        setProgressStep(3)
       })
       setResult(res)
     } catch (err: unknown) {
@@ -303,200 +521,242 @@ export default function ScoringTool() {
     }
   }
 
+  const handleDownloadImage = useCallback(() => {
+    if (!resultImageUrl) return
+    const link = document.createElement('a')
+    link.download = `评分结果_${track}_${levelId}_${Date.now()}.png`
+    link.href = resultImageUrl
+    link.click()
+  }, [resultImageUrl, track, levelId])
+
   return (
     <div className="min-h-screen bg-gray-50 pt-20 pb-16">
-      <div className="max-w-4xl mx-auto px-6">
+      <div className="max-w-6xl mx-auto px-6">
         {/* 标题 */}
         <div className="text-center mb-10">
           <h1 className="text-3xl font-bold text-gray-900">AI 自动评分工具</h1>
           <p className="mt-2 text-gray-500">上传修改后的代码文件，AI 将自动分析并给出推荐评分</p>
         </div>
 
-        {/* 选择赛项和级别 */}
-        <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
-          <h2 className="text-lg font-semibold text-gray-800 mb-4">选择赛项</h2>
-          <div className="grid grid-cols-2 gap-4 mb-4">
-            <button
-              onClick={() => { setTrack('PRO-DBG'); setLevelId('L1'); setResult(null); setStudentCode(''); setFileName('') }}
-              className={`px-4 py-3 rounded-lg border-2 font-medium transition-colors ${
-                track === 'PRO-DBG'
-                  ? 'border-blue-500 bg-blue-50 text-blue-700'
-                  : 'border-gray-200 bg-white text-gray-600 hover:border-gray-300'
-              }`}
-            >
-              AI纠错赛项 (PRO-DBG)
-            </button>
-            <button
-              onClick={() => { setTrack('PRO-CLI'); setLevelId('L1'); setResult(null); setStudentCode(''); setFileName('') }}
-              className={`px-4 py-3 rounded-lg border-2 font-medium transition-colors ${
-                track === 'PRO-CLI'
-                  ? 'border-green-500 bg-green-50 text-green-700'
-                  : 'border-gray-200 bg-white text-gray-600 hover:border-gray-300'
-              }`}
-            >
-              CLI部署赛项 (PRO-CLI)
-            </button>
-          </div>
-
-          <div className="flex gap-3">
-            {visibleLevels.map((l) => (
-              <button
-                key={l.id}
-                onClick={() => { setLevelId(l.id); setResult(null); setStudentCode(''); setFileName('') }}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                  levelId === l.id
-                    ? 'bg-gray-900 text-white'
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                }`}
-              >
-                {l.id}
-              </button>
-            ))}
-          </div>
-
-          {selectedLevel && (
-            <p className="mt-3 text-sm text-gray-500">{selectedLevel.description}</p>
-          )}
-        </div>
-
-        {/* 上传文件 */}
-        <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
-          <h2 className="text-lg font-semibold text-gray-800 mb-4">上传代码文件</h2>
-          {mainFile && (
-            <p className="text-sm text-gray-500 mb-3">
-              请上传修改后的 <code className="px-1.5 py-0.5 bg-gray-100 rounded text-gray-700">{mainFile.filename}</code>
-            </p>
-          )}
-
-          <div
-            onClick={() => fileInputRef.current?.click()}
-            className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center cursor-pointer hover:border-blue-400 hover:bg-blue-50/50 transition-colors"
-          >
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept=".py,.c,.js,.ts,.java"
-              onChange={handleFileUpload}
-              className="hidden"
-            />
-            {fileName ? (
-              <div>
-                <div className="text-blue-600 font-medium">{fileName}</div>
-                <div className="text-sm text-gray-500 mt-1">
-                  {studentCode.split('\n').length} 行代码 · 点击重新选择
-                </div>
-              </div>
-            ) : (
-              <div>
-                <svg className="mx-auto h-10 w-10 text-gray-400 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                </svg>
-                <p className="text-gray-600 font-medium">点击选择文件</p>
-                <p className="text-sm text-gray-400 mt-1">支持 .py, .c, .js, .ts, .java</p>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* 评分按钮 */}
-        <button
-          onClick={handleScore}
-          disabled={loading || !studentCode.trim()}
-          className={`w-full py-3 rounded-xl font-semibold text-white transition-colors mb-6 ${
-            loading || !studentCode.trim()
-              ? 'bg-gray-300 cursor-not-allowed'
-              : 'bg-blue-600 hover:bg-blue-700 active:bg-blue-800'
-          }`}
-        >
-          {loading ? '评分进行中...' : '开始评分'}
-        </button>
-
-        {/* 进度面板 */}
-        {loading && (
-          <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
-            <div className="flex items-center gap-3 mb-4">
-              <svg className="animate-spin h-5 w-5 text-blue-600" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-              </svg>
-              <span className="text-blue-700 font-medium">{progressSteps[progressStep]}</span>
-            </div>
-
-            {/* 步骤指示器 */}
-            <div className="flex items-center gap-2 mb-4">
-              {progressSteps.map((_, i) => (
-                <div key={i} className="flex-1">
-                  <div className={`h-1.5 rounded-full transition-colors duration-500 ${
-                    i <= progressStep ? 'bg-blue-500' : 'bg-gray-200'
-                  }`} />
-                </div>
-              ))}
-            </div>
-
-            {/* 流式文本预览 */}
-            {streamText && (
-              <div className="bg-gray-50 rounded-lg p-3 max-h-32 overflow-auto">
-                <pre className="text-xs text-gray-500 whitespace-pre-wrap font-mono">{streamText.slice(-200)}</pre>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* 错误提示 */}
-        {error && (
-          <div className="bg-red-50 border border-red-200 rounded-xl p-4 mb-6 text-red-700 text-sm">
-            {error}
-          </div>
-        )}
-
-        {/* 评分结果 */}
-        {result && (
-          <div className="bg-white rounded-xl border border-gray-200 overflow-hidden mb-6">
-            {/* 总分 */}
-            <div className="bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-5 text-white">
-              <div className="flex items-end justify-between">
-                <div>
-                  <div className="text-sm opacity-80">推荐总分</div>
-                  <div className="text-4xl font-bold mt-1">
-                    {result.totalScore} <span className="text-lg opacity-70">/ {result.maxTotalScore}</span>
-                  </div>
-                </div>
-                <div className="text-right text-sm opacity-80">
-                  {track === 'PRO-DBG' ? 'AI纠错赛项' : 'CLI部署赛项'} · {levelId}
-                </div>
-              </div>
-            </div>
-
-            {/* 详细评分 */}
-            <div className="p-6">
-              <h3 className="text-lg font-semibold text-gray-800 mb-4">详细评分</h3>
+        {/* 左右 3:7 布局 */}
+        <div className="grid grid-cols-1 lg:grid-cols-10 gap-6">
+          {/* ── 左侧面板：选择 + 上传 ── */}
+          <div className="lg:col-span-3 space-y-6">
+            {/* 选手信息 */}
+            <div className="bg-white rounded-xl border border-gray-200 p-5">
+              <h2 className="text-lg font-semibold text-gray-800 mb-4">选手信息</h2>
               <div className="space-y-3">
-                {result.scores.map((s, i) => (
-                  <div key={i} className="flex items-start gap-3 border-b border-gray-100 pb-3 last:border-0">
-                    <div className="flex-shrink-0 w-20 text-right">
-                      <span className={`text-lg font-bold ${s.score >= s.maxScore * 0.8 ? 'text-green-600' : s.score >= s.maxScore * 0.5 ? 'text-yellow-600' : 'text-red-600'}`}>
-                        {s.score}
-                      </span>
-                      <span className="text-gray-400 text-sm"> / {s.maxScore}</span>
-                    </div>
-                    <div className="flex-1">
-                      <div className="font-medium text-gray-800">{s.item}</div>
-                      <div className="text-sm text-gray-500 mt-0.5">{s.comment}</div>
-                    </div>
-                  </div>
+                <div>
+                  <label className="block text-xs text-gray-500 mb-1">姓名</label>
+                  <input
+                    type="text"
+                    value={studentName}
+                    onChange={(e) => setStudentName(e.target.value)}
+                    placeholder="请输入姓名"
+                    className="w-full px-3 py-2 rounded-lg border border-gray-300 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs text-gray-500 mb-1">学号</label>
+                  <input
+                    type="text"
+                    value={studentId}
+                    onChange={(e) => setStudentId(e.target.value)}
+                    placeholder="请输入学号"
+                    className="w-full px-3 py-2 rounded-lg border border-gray-300 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* 选择赛项和级别 */}
+            <div className="bg-white rounded-xl border border-gray-200 p-5">
+              <h2 className="text-lg font-semibold text-gray-800 mb-4">选择赛项</h2>
+              <div className="space-y-3 mb-4">
+                <button
+                  onClick={() => { setTrack('PRO-DBG'); setLevelId('L1'); setResult(null); setStudentCode(''); setFileName('') }}
+                  className={`w-full px-4 py-3 rounded-lg border-2 font-medium transition-colors text-sm ${
+                    track === 'PRO-DBG'
+                      ? 'border-blue-500 bg-blue-50 text-blue-700'
+                      : 'border-gray-200 bg-white text-gray-600 hover:border-gray-300'
+                  }`}
+                >
+                  AI纠错赛项 (PRO-DBG)
+                </button>
+                <button
+                  onClick={() => { setTrack('PRO-CLI'); setLevelId('L1'); setResult(null); setStudentCode(''); setFileName('') }}
+                  className={`w-full px-4 py-3 rounded-lg border-2 font-medium transition-colors text-sm ${
+                    track === 'PRO-CLI'
+                      ? 'border-green-500 bg-green-50 text-green-700'
+                      : 'border-gray-200 bg-white text-gray-600 hover:border-gray-300'
+                  }`}
+                >
+                  CLI部署赛项 (PRO-CLI)
+                </button>
+              </div>
+
+              <div className="flex gap-2">
+                {visibleLevels.map((l) => (
+                  <button
+                    key={l.id}
+                    onClick={() => { setLevelId(l.id); setResult(null); setStudentCode(''); setFileName('') }}
+                    className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                      levelId === l.id
+                        ? 'bg-gray-900 text-white'
+                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                    }`}
+                  >
+                    {l.id}
+                  </button>
                 ))}
               </div>
+
+              {selectedLevel && (
+                <p className="mt-3 text-xs text-gray-500">{selectedLevel.description}</p>
+              )}
             </div>
 
-            {/* 总结 */}
-            <div className="bg-gray-50 px-6 py-4 border-t border-gray-100">
-              <h3 className="text-sm font-semibold text-gray-600 mb-1">AI 评语</h3>
-              <p className="text-gray-700">{result.summary}</p>
+            {/* 上传文件 */}
+            <div className="bg-white rounded-xl border border-gray-200 p-5">
+              <h2 className="text-lg font-semibold text-gray-800 mb-3">上传代码</h2>
+              {mainFile && (
+                <p className="text-xs text-gray-500 mb-3">
+                  请上传 <code className="px-1 py-0.5 bg-gray-100 rounded text-gray-700">{mainFile.filename}</code>
+                </p>
+              )}
+
+              <div
+                onClick={() => fileInputRef.current?.click()}
+                className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center cursor-pointer hover:border-blue-400 hover:bg-blue-50/50 transition-colors"
+              >
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept=".py,.c,.js,.ts,.java"
+                  onChange={handleFileUpload}
+                  className="hidden"
+                />
+                {fileName ? (
+                  <div>
+                    <div className="text-blue-600 font-medium text-sm">{fileName}</div>
+                    <div className="text-xs text-gray-500 mt-1">
+                      {studentCode.split('\n').length} 行 · 点击重新选择
+                    </div>
+                  </div>
+                ) : (
+                  <div>
+                    <svg className="mx-auto h-8 w-8 text-gray-400 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                    </svg>
+                    <p className="text-gray-600 font-medium text-sm">点击选择文件</p>
+                    <p className="text-xs text-gray-400 mt-1">.py .c .js .ts .java</p>
+                  </div>
+                )}
+              </div>
             </div>
+
+            {/* 评分按钮 */}
+            <button
+              onClick={handleScore}
+              disabled={loading || !studentCode.trim()}
+              className={`w-full py-3 rounded-xl font-semibold text-white transition-colors ${
+                loading || !studentCode.trim()
+                  ? 'bg-gray-300 cursor-not-allowed'
+                  : 'bg-blue-600 hover:bg-blue-700 active:bg-blue-800'
+              }`}
+            >
+              {loading ? '评分中...' : '开始评分'}
+            </button>
           </div>
-        )}
+
+          {/* ── 右侧面板：结果 ── */}
+          <div className="lg:col-span-7 space-y-6">
+            {/* 进度面板 */}
+            {loading && (
+              <div className="bg-white rounded-xl border border-gray-200 p-6">
+                <div className="flex items-center gap-3 mb-4">
+                  <svg className="animate-spin h-5 w-5 text-blue-600" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                  </svg>
+                  <span className="text-blue-700 font-medium">{progressSteps[progressStep]}</span>
+                </div>
+
+                {/* 步骤指示器 */}
+                <div className="flex items-center gap-2 mb-4">
+                  {progressSteps.map((_, i) => (
+                    <div key={i} className="flex-1">
+                      <div className={`h-1.5 rounded-full transition-colors duration-500 ${
+                        i <= progressStep ? 'bg-blue-500' : 'bg-gray-200'
+                      }`} />
+                    </div>
+                  ))}
+                </div>
+
+                {/* 流式文本预览 */}
+                {streamText && (
+                  <div className="bg-gray-50 rounded-lg p-3 max-h-32 overflow-auto">
+                    <pre className="text-xs text-gray-500 whitespace-pre-wrap font-mono">{streamText.slice(-200)}</pre>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* 错误提示 */}
+            {error && (
+              <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-red-700 text-sm">
+                {error}
+              </div>
+            )}
+
+            {/* 评分结果 - 仅显示图片 */}
+            {resultImageUrl && (
+              <div>
+                <img
+                  src={resultImageUrl}
+                  alt="评分结果"
+                  className="w-full rounded-xl border border-gray-200 shadow-sm"
+                  draggable={false}
+                  onContextMenu={(e) => e.preventDefault()}
+                />
+                <button
+                  onClick={handleDownloadImage}
+                  className="mt-4 w-full py-2.5 rounded-xl border border-gray-300 text-gray-700 font-medium hover:bg-gray-100 transition-colors flex items-center justify-center gap-2"
+                >
+                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                  保存评分截图
+                </button>
+              </div>
+            )}
+
+            {/* 图片生成中（结果已返回但图片还没渲染好） */}
+            {result && !resultImageUrl && !loading && (
+              <div className="bg-white rounded-xl border border-gray-200 p-8 text-center">
+                <svg className="animate-spin mx-auto h-6 w-6 text-blue-500 mb-2" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                </svg>
+                <p className="text-gray-500 text-sm">正在生成评分图片...</p>
+              </div>
+            )}
+
+            {/* 空状态提示 */}
+            {!loading && !result && !error && (
+              <div className="bg-white rounded-xl border border-gray-200 p-12 text-center text-gray-400">
+                <svg className="mx-auto h-12 w-12 mb-3 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                <p className="font-medium">评分结果将在此处显示</p>
+                <p className="text-sm mt-1">请先在左侧选择赛项并上传代码文件</p>
+              </div>
+            )}
+          </div>
+        </div>
 
       </div>
+
     </div>
   )
 }
