@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { COMPETITION_NAME } from '../config'
 import { debugLevels, debugCodeFiles } from '../data/debugTrack'
 import { cliLevels, cliCodeFiles } from '../data/cliTrack'
@@ -127,11 +127,14 @@ ${studentCode}
   }
 }
 
-/* ── API 调用 ── */
+/* ── API 调用（流式） ── */
 
-async function callMiniMaxAPI(prompt: string): Promise<ScoringResult> {
+async function callMiniMaxAPI(
+  prompt: string,
+  onProgress: (text: string) => void,
+): Promise<ScoringResult> {
   const apiKey = import.meta.env.VITE_MINIMAX_API_KEY
-  const model = import.meta.env.VITE_MINIMAX_MODEL || 'M2-her'
+  const model = import.meta.env.VITE_MINIMAX_MODEL || 'MiniMax-M2.7'
 
   if (!apiKey) {
     throw new Error('未配置 VITE_MINIMAX_API_KEY 环境变量')
@@ -145,6 +148,7 @@ async function callMiniMaxAPI(prompt: string): Promise<ScoringResult> {
     },
     body: JSON.stringify({
       model,
+      stream: true,
       messages: [
         {
           role: 'system',
@@ -166,11 +170,46 @@ async function callMiniMaxAPI(prompt: string): Promise<ScoringResult> {
     throw new Error(`API 请求失败 (${resp.status}): ${text}`)
   }
 
-  const data = await resp.json()
-  const content = data.choices?.[0]?.message?.content ?? ''
+  // 流式读取
+  const reader = resp.body?.getReader()
+  if (!reader) throw new Error('无法获取响应流')
 
-  // 提取 JSON（可能被 markdown 代码块包裹）
-  const jsonMatch = content.match(/\{[\s\S]*\}/)
+  const decoder = new TextDecoder()
+  let fullContent = ''
+
+  while (true) {
+    const { done, value } = await reader.read()
+    if (done) break
+
+    const chunk = decoder.decode(value, { stream: true })
+    // SSE 格式：每行以 data: 开头
+    const lines = chunk.split('\n')
+    for (const line of lines) {
+      const trimmed = line.trim()
+      if (!trimmed || !trimmed.startsWith('data:')) continue
+      const jsonStr = trimmed.slice(5).trim()
+      if (jsonStr === '[DONE]') continue
+      try {
+        const parsed = JSON.parse(jsonStr)
+        const delta = parsed.choices?.[0]?.delta?.content ?? ''
+        if (delta) {
+          fullContent += delta
+          onProgress(fullContent)
+        }
+        // 也处理非流式的完整消息
+        const msg = parsed.choices?.[0]?.message?.content
+        if (msg && !fullContent) {
+          fullContent = msg
+          onProgress(fullContent)
+        }
+      } catch {
+        // 忽略解析失败的行
+      }
+    }
+  }
+
+  // 提取 JSON
+  const jsonMatch = fullContent.match(/\{[\s\S]*\}/)
   if (!jsonMatch) {
     throw new Error('AI 返回的内容无法解析为 JSON')
   }
@@ -186,9 +225,26 @@ export default function ScoringTool() {
   const [studentCode, setStudentCode] = useState('')
   const [fileName, setFileName] = useState('')
   const [loading, setLoading] = useState(false)
+  const [streamText, setStreamText] = useState('')
+  const [progressStep, setProgressStep] = useState(0)
   const [result, setResult] = useState<ScoringResult | null>(null)
   const [error, setError] = useState('')
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const progressTimerRef = useRef<ReturnType<typeof setInterval> | null>(null)
+
+  const progressSteps = [
+    '正在读取代码...',
+    '正在分析代码结构...',
+    'AI 正在逐项评分...',
+    '生成评分报告...',
+  ]
+
+  // 清理 timer
+  useEffect(() => {
+    return () => {
+      if (progressTimerRef.current) clearInterval(progressTimerRef.current)
+    }
+  }, [])
 
   const visibleLevels = getVisibleLevels(track)
   const selectedLevel = visibleLevels.find((l) => l.id === levelId)
@@ -218,15 +274,32 @@ export default function ScoringTool() {
     setLoading(true)
     setError('')
     setResult(null)
+    setStreamText('')
+    setProgressStep(0)
+
+    // 进度步骤动画
+    let step = 0
+    progressTimerRef.current = setInterval(() => {
+      step = Math.min(step + 1, 3)
+      setProgressStep(step)
+    }, 3000)
 
     try {
       const prompt = buildPrompt(track, selectedLevel, mainFile.content, studentCode)
-      const res = await callMiniMaxAPI(prompt)
+      const res = await callMiniMaxAPI(prompt, (text) => {
+        setStreamText(text)
+        setProgressStep(3) // 收到流式数据后跳到最后一步
+      })
       setResult(res)
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : '评分失败，请稍后重试')
     } finally {
       setLoading(false)
+      setStreamText('')
+      if (progressTimerRef.current) {
+        clearInterval(progressTimerRef.current)
+        progressTimerRef.current = null
+      }
     }
   }
 
@@ -335,18 +408,39 @@ export default function ScoringTool() {
               : 'bg-blue-600 hover:bg-blue-700 active:bg-blue-800'
           }`}
         >
-          {loading ? (
-            <span className="flex items-center justify-center gap-2">
-              <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+          {loading ? '评分进行中...' : '开始评分'}
+        </button>
+
+        {/* 进度面板 */}
+        {loading && (
+          <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
+            <div className="flex items-center gap-3 mb-4">
+              <svg className="animate-spin h-5 w-5 text-blue-600" viewBox="0 0 24 24">
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
               </svg>
-              AI 正在评分中...
-            </span>
-          ) : (
-            '开始评分'
-          )}
-        </button>
+              <span className="text-blue-700 font-medium">{progressSteps[progressStep]}</span>
+            </div>
+
+            {/* 步骤指示器 */}
+            <div className="flex items-center gap-2 mb-4">
+              {progressSteps.map((_, i) => (
+                <div key={i} className="flex-1">
+                  <div className={`h-1.5 rounded-full transition-colors duration-500 ${
+                    i <= progressStep ? 'bg-blue-500' : 'bg-gray-200'
+                  }`} />
+                </div>
+              ))}
+            </div>
+
+            {/* 流式文本预览 */}
+            {streamText && (
+              <div className="bg-gray-50 rounded-lg p-3 max-h-32 overflow-auto">
+                <pre className="text-xs text-gray-500 whitespace-pre-wrap font-mono">{streamText.slice(-200)}</pre>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* 错误提示 */}
         {error && (
